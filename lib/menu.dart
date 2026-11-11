@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
 import 'package:myportofolio_mobile/widgets/item_card.dart';
+import 'package:myportofolio_mobile/widgets/profile_header.dart';
 
 /// Lebar maksimum konten agar kartu tidak melebar berlebihan di tablet dan web.
 const double kMaxContentWidth = 720;
@@ -27,6 +28,8 @@ class MyHomePage extends StatelessWidget {
   static const String npm = '2406496372';
   static const String nama = 'Muhammad Rayyan Basalamah';
   static const String kelas = 'PBP B';
+  static const String sapaan = 'Halo, saya Rayyan';
+  static const String keterangan = 'S1 Sistem Informasi · Universitas Indonesia';
 
   static final List<ItemHomepage> items = [
     ItemHomepage(
@@ -85,6 +88,12 @@ class MyHomePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      const ProfileHeader(
+                        name: nama,
+                        greeting: sapaan,
+                        subtitle: keterangan,
+                      ),
+                      const SizedBox(height: 16),
                       _buildInfoCards(compact: compact),
                       const SizedBox(height: 24),
                       const Text(
