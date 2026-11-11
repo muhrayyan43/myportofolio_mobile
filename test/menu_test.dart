@@ -6,7 +6,12 @@ import 'package:myportofolio_mobile/widgets/item_card.dart';
 
 import 'test_helpers.dart';
 
-const expectedActions = ['Lihat Experience', 'Tambah Experience', 'Logout'];
+const expectedActions = [
+  'Lihat Experience',
+  'Tambah Experience',
+  'Lihat Proyek',
+  'Logout',
+];
 
 void main() {
   testWidgets('InfoCard menampilkan NPM, nama, dan kelas saya', (tester) async {

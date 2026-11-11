@@ -1,9 +1,18 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myportofolio_mobile/main.dart';
 import 'package:myportofolio_mobile/widgets/item_card.dart';
 
 /// Menjalankan aplikasi dari root-nya, sama seperti `main()`.
-Future<void> pumpApp(WidgetTester tester) async {
+///
+/// Jika [size] diisi, layar uji diatur ke ukuran itu (dalam piksel logis)
+/// dan dikembalikan ke ukuran bawaan setelah test selesai.
+Future<void> pumpApp(WidgetTester tester, {Size? size}) async {
+  if (size != null) {
+    tester.view.physicalSize = size;
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+  }
   await tester.pumpWidget(const MyApp());
 }
 
@@ -14,4 +23,13 @@ Future<void> tapAction(WidgetTester tester, String name) async {
   await tester.ensureVisible(card);
   await tester.tap(card);
   await tester.pumpAndSettle();
+}
+
+/// Posisi tepi kiri (dx) yang berbeda dari semua widget yang cocok dengan
+/// [finder]. Untuk kartu dalam grid, jumlahnya sama dengan jumlah kolom.
+Set<double> leftEdgesOf(WidgetTester tester, Finder finder) {
+  return {
+    for (var i = 0; i < finder.evaluate().length; i++)
+      tester.getTopLeft(finder.at(i)).dx,
+  };
 }
