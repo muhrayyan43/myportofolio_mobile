@@ -29,10 +29,30 @@ class MyHomePage extends StatelessWidget {
   static const String kelas = 'PBP B';
 
   static final List<ItemHomepage> items = [
-    ItemHomepage('Lihat Experience', Icons.work, Colors.blue.shade800),
-    ItemHomepage('Tambah Experience', Icons.add_circle, Colors.green.shade800),
-    ItemHomepage('Lihat Proyek', Icons.folder, Colors.amber.shade700),
-    ItemHomepage('Logout', Icons.logout, Colors.red.shade700),
+    ItemHomepage(
+      'Lihat Experience',
+      Icons.work,
+      Colors.blue.shade800,
+      description: 'Lihat daftar pengalaman magang, riset, volunteer, dan kerja',
+    ),
+    ItemHomepage(
+      'Tambah Experience',
+      Icons.add_circle,
+      Colors.green.shade800,
+      description: 'Tambah pengalaman baru ke portofolio',
+    ),
+    ItemHomepage(
+      'Lihat Proyek',
+      Icons.folder,
+      Colors.amber.shade700,
+      description: 'Lihat proyek yang pernah dikerjakan',
+    ),
+    ItemHomepage(
+      'Logout',
+      Icons.logout,
+      Colors.red.shade700,
+      description: 'Keluar dari akun',
+    ),
   ];
 
   static const double _pagePadding = 16;
