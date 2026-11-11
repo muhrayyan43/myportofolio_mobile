@@ -1,9 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myportofolio_mobile/menu.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
 import 'package:myportofolio_mobile/widgets/item_card.dart';
 
 import 'test_helpers.dart';
+
+const expectedActions = ['Lihat Experience', 'Tambah Experience', 'Logout'];
 
 void main() {
   testWidgets('InfoCard menampilkan NPM, nama, dan kelas saya', (tester) async {
@@ -24,18 +27,31 @@ void main() {
     }
   });
 
-  testWidgets('ada minimal tiga tombol aksi', (tester) async {
+  testWidgets('tombol aksi sesuai bagian portofolio saya', (tester) async {
     await pumpApp(tester);
 
-    expect(find.byType(ItemCard), findsAtLeastNWidgets(3));
+    expect(MyHomePage.items.map((item) => item.name).toList(), expectedActions);
+    expect(find.byType(ItemCard), findsNWidgets(expectedActions.length));
   });
 
-  for (final item in MyHomePage.items) {
-    testWidgets('menekan ${item.name} memunculkan SnackBar yang sesuai', (tester) async {
+  for (final name in expectedActions) {
+    testWidgets('menekan $name memunculkan SnackBar yang sesuai', (tester) async {
       await pumpApp(tester);
-      await tapAction(tester, item.name);
+      await tapAction(tester, name);
 
-      expect(find.text('Kamu telah menekan tombol ${item.name}!'), findsOneWidget);
+      expect(find.text('Kamu telah menekan tombol $name!'), findsOneWidget);
     });
   }
+
+  testWidgets('setiap tombol memakai warna latar yang berbeda', (tester) async {
+    await pumpApp(tester);
+
+    final backgrounds = tester
+        .widgetList<Material>(
+          find.descendant(of: find.byType(ItemCard), matching: find.byType(Material)),
+        )
+        .map((material) => material.color)
+        .toSet();
+    expect(backgrounds, hasLength(MyHomePage.items.length));
+  });
 }
