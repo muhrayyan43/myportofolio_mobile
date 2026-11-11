@@ -5,6 +5,7 @@ void main() {
   runApp(const MyApp());
 }
 
+/// Root aplikasi: MaterialApp dengan tema indigo dan amber dari Tutorial 08.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }

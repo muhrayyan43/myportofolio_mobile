@@ -3,42 +3,39 @@ import 'package:myportofolio_mobile/models/item_homepage.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
 import 'package:myportofolio_mobile/widgets/item_card.dart';
 
+/// Halaman utama MyPortfolio Mobile.
+///
+/// Isinya tetap selama aplikasi berjalan, jadi cukup [StatelessWidget]. Data
+/// disimpan di field `static` agar konstruktornya bisa `const` dan daftar
+/// tombol tidak dibuat ulang setiap kali halaman di-build.
 class MyHomePage extends StatelessWidget {
-  MyHomePage({super.key});
+  const MyHomePage({super.key});
 
-  final String npm = "2406000001";
-  final String nama = "Burhan";
-  final String kelas = "PBP A";
+  static const String npm = '2406000001';
+  static const String nama = 'Burhan';
+  static const String kelas = 'PBP A';
 
-  final List<ItemHomepage> items = [
-    ItemHomepage("Lihat Proyek", Icons.folder),
-    ItemHomepage("Tambah Proyek", Icons.add_circle),
-    ItemHomepage("Logout", Icons.logout),
+  static final List<ItemHomepage> items = [
+    ItemHomepage('Lihat Proyek', Icons.folder),
+    ItemHomepage('Tambah Proyek', Icons.add_circle),
+    ItemHomepage('Logout', Icons.logout),
   ];
 
   @override
   Widget build(BuildContext context) {
-    // Scaffold menyediakan struktur visual dasar halaman (AppBar, Body, SnackBar).
     return Scaffold(
-      // AppBar menampilkan bar bagian atas halaman aplikasi.
       appBar: AppBar(
         title: const Text(
           'MyPortfolio',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
-      // Body halaman utama dengan padding di sekelilingnya.
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Baris horizontal untuk menampilkan 3 InfoCard secara sejajar.
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 InfoCard(title: 'NPM', content: npm),
@@ -46,10 +43,7 @@ class MyHomePage extends StatelessWidget {
                 InfoCard(title: 'Class', content: kelas),
               ],
             ),
-
             const SizedBox(height: 16.0),
-
-            // Bagian tengah: pesan sambutan dan kisi tombol menu portofolio.
             Center(
               child: Column(
                 children: [
@@ -57,25 +51,17 @@ class MyHomePage extends StatelessWidget {
                     padding: EdgeInsets.only(top: 16.0),
                     child: Text(
                       'Selamat datang di MyPortfolio Mobile!',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                      ),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
                     ),
                   ),
-
-                  // GridView menampilkan kartu tombol dalam tata letak kisi 3 kolom.
                   GridView.count(
                     primary: true,
                     padding: const EdgeInsets.all(20),
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
                     crossAxisCount: 3,
-                    // shrinkWrap agar ukuran kisi menyesuaikan tinggi konten anak.
                     shrinkWrap: true,
-                    children: items.map((ItemHomepage item) {
-                      return ItemCard(item);
-                    }).toList(),
+                    children: [for (final item in items) ItemCard(item)],
                   ),
                 ],
               ),
