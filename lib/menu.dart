@@ -7,7 +7,9 @@ import 'package:myportofolio_mobile/widgets/item_card.dart';
 ///
 /// Isinya tetap selama aplikasi berjalan, jadi cukup [StatelessWidget]. Data
 /// disimpan di field `static` agar konstruktornya bisa `const` dan daftar
-/// tombol tidak dibuat ulang setiap kali halaman di-build.
+/// tombol tidak dibuat ulang setiap kali halaman di-build. Konten dibungkus
+/// [SingleChildScrollView] agar tidak overflow di layar pendek, sedangkan
+/// grid di dalamnya tidak punya scroll sendiri.
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
@@ -18,6 +20,7 @@ class MyHomePage extends StatelessWidget {
   static final List<ItemHomepage> items = [
     ItemHomepage('Lihat Experience', Icons.work, Colors.blue.shade800),
     ItemHomepage('Tambah Experience', Icons.add_circle, Colors.green.shade800),
+    ItemHomepage('Lihat Proyek', Icons.folder, Colors.amber.shade700),
     ItemHomepage('Logout', Icons.logout, Colors.red.shade700),
   ];
 
@@ -31,42 +34,39 @@ class MyHomePage extends StatelessWidget {
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                InfoCard(title: 'NPM', content: npm),
-                InfoCard(title: 'Name', content: nama),
-                InfoCard(title: 'Class', content: kelas),
-              ],
-            ),
-            const SizedBox(height: 16.0),
-            Center(
-              child: Column(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16.0),
-                    child: Text(
-                      'Selamat datang di MyPortfolio Mobile!',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-                    ),
-                  ),
-                  GridView.count(
-                    primary: true,
-                    padding: const EdgeInsets.all(20),
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    crossAxisCount: 3,
-                    shrinkWrap: true,
-                    children: [for (final item in items) ItemCard(item)],
-                  ),
+                  InfoCard(title: 'NPM', content: npm),
+                  InfoCard(title: 'Name', content: nama),
+                  InfoCard(title: 'Class', content: kelas),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 16.0),
+              const Padding(
+                padding: EdgeInsets.only(top: 16.0),
+                child: Text(
+                  'Selamat datang di MyPortfolio Mobile!',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+                ),
+              ),
+              GridView.count(
+                primary: false,
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(20),
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                crossAxisCount: 3,
+                children: [for (final item in items) ItemCard(item)],
+              ),
+            ],
+          ),
         ),
       ),
     );
