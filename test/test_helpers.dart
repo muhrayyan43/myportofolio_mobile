@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myportofolio_mobile/main.dart';
-import 'package:myportofolio_mobile/menu.dart';
+import 'package:myportofolio_mobile/widgets/item_card.dart';
 
 /// Menjalankan aplikasi dari root-nya, sama seperti `main()`.
 Future<void> pumpApp(WidgetTester tester) async {
