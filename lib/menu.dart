@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
 import 'package:myportofolio_mobile/widgets/item_card.dart';
+import 'package:myportofolio_mobile/widgets/profile_header.dart';
 
 /// Lebar maksimum konten agar kartu tidak melebar berlebihan di tablet dan web.
 const double kMaxContentWidth = 720;
@@ -27,12 +28,34 @@ class MyHomePage extends StatelessWidget {
   static const String npm = '2406496372';
   static const String nama = 'Muhammad Rayyan Basalamah';
   static const String kelas = 'PBP B';
+  static const String sapaan = 'Halo, saya Rayyan';
+  static const String keterangan = 'S1 Sistem Informasi · Universitas Indonesia';
 
   static final List<ItemHomepage> items = [
-    ItemHomepage('Lihat Experience', Icons.work, Colors.blue.shade800),
-    ItemHomepage('Tambah Experience', Icons.add_circle, Colors.green.shade800),
-    ItemHomepage('Lihat Proyek', Icons.folder, Colors.amber.shade700),
-    ItemHomepage('Logout', Icons.logout, Colors.red.shade700),
+    ItemHomepage(
+      'Lihat Experience',
+      Icons.work,
+      Colors.blue.shade800,
+      description: 'Lihat daftar pengalaman magang, riset, volunteer, dan kerja',
+    ),
+    ItemHomepage(
+      'Tambah Experience',
+      Icons.add_circle,
+      Colors.green.shade800,
+      description: 'Tambah pengalaman baru ke portofolio',
+    ),
+    ItemHomepage(
+      'Lihat Proyek',
+      Icons.folder,
+      Colors.amber.shade700,
+      description: 'Lihat proyek yang pernah dikerjakan',
+    ),
+    ItemHomepage(
+      'Logout',
+      Icons.logout,
+      Colors.red.shade700,
+      description: 'Keluar dari akun',
+    ),
   ];
 
   static const double _pagePadding = 16;
@@ -65,6 +88,12 @@ class MyHomePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      const ProfileHeader(
+                        name: nama,
+                        greeting: sapaan,
+                        subtitle: keterangan,
+                      ),
+                      const SizedBox(height: 16),
                       _buildInfoCards(compact: compact),
                       const SizedBox(height: 24),
                       const Text(
