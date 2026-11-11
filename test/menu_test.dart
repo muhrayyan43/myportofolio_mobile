@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myportofolio_mobile/menu.dart';
+import 'package:myportofolio_mobile/widgets/info_card.dart';
+import 'package:myportofolio_mobile/widgets/item_card.dart';
 
 import 'test_helpers.dart';
 
@@ -20,7 +22,7 @@ void main() {
     expect(find.byType(ItemCard), findsAtLeastNWidgets(3));
   });
 
-  for (final item in MyHomePage().items) {
+  for (final item in MyHomePage.items) {
     testWidgets('menekan ${item.name} memunculkan SnackBar yang sesuai', (tester) async {
       await pumpApp(tester);
       await tapAction(tester, item.name);
