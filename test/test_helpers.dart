@@ -24,3 +24,12 @@ Future<void> tapAction(WidgetTester tester, String name) async {
   await tester.tap(card);
   await tester.pumpAndSettle();
 }
+
+/// Posisi tepi kiri (dx) yang berbeda dari semua widget yang cocok dengan
+/// [finder]. Untuk kartu dalam grid, jumlahnya sama dengan jumlah kolom.
+Set<double> leftEdgesOf(WidgetTester tester, Finder finder) {
+  return {
+    for (var i = 0; i < finder.evaluate().length; i++)
+      tester.getTopLeft(finder.at(i)).dx,
+  };
+}
