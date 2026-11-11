@@ -6,13 +6,21 @@ import 'package:myportofolio_mobile/widgets/item_card.dart';
 import 'test_helpers.dart';
 
 void main() {
-  testWidgets('halaman utama menampilkan judul dan tiga InfoCard', (tester) async {
+  testWidgets('InfoCard menampilkan NPM, nama, dan kelas saya', (tester) async {
     await pumpApp(tester);
 
     expect(find.text('MyPortfolio'), findsOneWidget);
     expect(find.byType(InfoCard), findsNWidgets(3));
-    for (final title in ['NPM', 'Name', 'Class']) {
-      expect(find.widgetWithText(InfoCard, title), findsOneWidget);
+
+    const identitas = {
+      'NPM': '2406496372',
+      'Name': 'Muhammad Rayyan Basalamah',
+      'Class': 'PBP B',
+    };
+    for (final entry in identitas.entries) {
+      final card = find.widgetWithText(InfoCard, entry.key);
+      expect(card, findsOneWidget);
+      expect(find.descendant(of: card, matching: find.text(entry.value)), findsOneWidget);
     }
   });
 
