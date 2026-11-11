@@ -125,3 +125,81 @@ Riwayat Tugas 1 sampai 6 (situs web Django) ada di
   warnanya mengikuti warna teks.
 - **Kualitas.** Ada 30 test di lima file, `flutter analyze` bersih, dan
   GitHub Actions menjalankan keduanya setiap push.
+
+#### Pertanyaan reflektif
+
+1. Widget tree itu susunan widget yang bentuknya seperti pohon. Setiap widget
+   bisa punya anak lewat `child` atau `children`, dan widget yang membungkus
+   disebut parent. Di aplikasi ini kira-kira seperti ini:
+
+   ```text
+   MyApp → MaterialApp → MyHomePage → Scaffold
+     ├─ AppBar
+     └─ SafeArea → LayoutBuilder → SingleChildScrollView → Column
+          ├─ ProfileHeader
+          ├─ InfoCard ×3
+          └─ GridView → ItemCard ×4
+   ```
+
+   Parent yang ngatur batas ukuran dan posisi anaknya, lalu anak milih
+   ukurannya sendiri di dalam batas itu. Contohnya `InfoCard` tidak
+   menentukan lebarnya sendiri, tapi ngikut `Expanded` di layar lebar atau
+   selebar layar di HP. Data juga turun dari parent ke anak lewat
+   konstruktor, misalnya `MyHomePage` ngasih `ItemHomepage` ke `ItemCard`.
+
+2. Widget yang saya pakai:
+   - `MaterialApp`: root aplikasi, ngatur tema indigo–amber dan halaman awal.
+   - `Scaffold` dan `AppBar`: kerangka halaman dan bar judul "MyPortfolio".
+   - `SafeArea`, `LayoutBuilder`, `SingleChildScrollView`: supaya konten aman
+     dari notch, bisa menyesuaikan lebar layar, dan bisa di-scroll.
+   - `Center`, `SizedBox`, `Padding`: ngatur posisi, lebar maksimal, dan jarak.
+   - `Column`, `Row`, `Expanded`, `IntrinsicHeight`: nyusun widget ke bawah
+     atau ke samping, dan bikin tiga InfoCard sama lebar dan sama tinggi.
+   - `GridView.count`: grid tombol 2 atau 4 kolom.
+   - `Card`, `Material`, `InkWell`: kartu, warna latar tombol, dan efek waktu
+     ditekan atau di-hover.
+   - `Text`, `Icon`, `CircleAvatar`: teks, ikon, dan avatar inisial "MR".
+   - `SnackBar`: pesan "Kamu telah menekan tombol X!".
+   - `Tooltip`, `Semantics`, `ExcludeSemantics`: penjelasan tombol dan label
+     untuk pembaca layar.
+   - Widget buatan sendiri: `MyHomePage`, `ProfileHeader`, `InfoCard`, dan
+     `ItemCard`.
+
+3. `MaterialApp` itu pembungkus aplikasi yang pakai gaya Material Design. Dia
+   yang ngasih tema, halaman awal, dan "fasilitas" yang dipakai widget lain,
+   misalnya `ScaffoldMessenger` buat SnackBar, `Overlay` buat Tooltip, dan
+   `Navigator` buat pindah halaman. Karena widget lain nyari fasilitas itu ke
+   atas pohon, `MaterialApp` paling pas ditaruh paling atas. Kalau tidak ada,
+   `ScaffoldMessenger.of(context)` di `ItemCard` bakal error.
+
+4. `StatelessWidget` tidak nyimpan data yang bisa berubah, jadi tampilannya
+   cuma tergantung data yang dikasih ke dia. `StatefulWidget` punya `State`
+   yang bisa berubah, dan setiap `setState()` dipanggil tampilannya di-build
+   ulang, contohnya counter bawaan Flutter. Di aplikasi ini semua widget saya
+   Stateless karena datanya tetap. Efek hover dan tekan juga sudah diurus
+   `InkWell`, jadi kartunya tidak perlu Stateful. Stateful baru perlu kalau
+   widget itu sendiri harus ingat sesuatu yang berubah, misalnya isi form atau
+   data yang lagi di-load dari API.
+
+5. `BuildContext` itu semacam "alamat" widget di dalam widget tree. Lewat
+   context, widget bisa nyari widget lain di atasnya. Di proyek ini context
+   dipakai buat `Theme.of(context)` (warna AppBar dan teks header) dan
+   `ScaffoldMessenger.of(context)` (nampilin SnackBar waktu kartu ditekan).
+   Context-nya dikasih otomatis lewat parameter `build(BuildContext context)`.
+
+6. Hot reload (`r`) cuma masukin kode yang berubah ke aplikasi yang lagi
+   jalan, jadi cepat dan state-nya tidak hilang. Cocok buat ganti warna, teks,
+   atau layout. Hot restart (`R`) menjalankan ulang aplikasi dari `main()`,
+   jadi state-nya ke-reset. Hot reload tidak cukup kalau yang diubah itu
+   nilai field `static` (misalnya nambah tombol di `MyHomePage.items`), kode
+   di `main()` atau `initState()`, atau ganti widget dari Stateless ke
+   Stateful. Kalau nambah package di `pubspec.yaml` atau ubah file native
+   Android, aplikasinya harus di-stop dulu lalu `flutter run` lagi.
+
+#### AI Disclosure
+
+- **Tools:** Claude (Anthropic) di claude.ai, Claude tidak terhubung ke
+  laptop saya, jadi semua code dan `git` saya jalankan sendiri.
+
+- **Bagian yang dibantu AI:** rancangan urutan commit dan branch; kode Dart di
+  `test/`; workflow `.github/workflows/flutter.yml`;
