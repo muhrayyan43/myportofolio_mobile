@@ -11,14 +11,14 @@ import 'package:myportofolio_mobile/widgets/item_card.dart';
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
-  static const String npm = '2406000001';
-  static const String nama = 'Burhan';
-  static const String kelas = 'PBP A';
+  static const String npm = '2406496372';
+  static const String nama = 'Muhammad Rayyan Basalamah';
+  static const String kelas = 'PBP B';
 
   static final List<ItemHomepage> items = [
-    ItemHomepage('Lihat Proyek', Icons.folder),
-    ItemHomepage('Tambah Proyek', Icons.add_circle),
-    ItemHomepage('Logout', Icons.logout),
+    ItemHomepage('Lihat Experience', Icons.work, Colors.blue.shade800),
+    ItemHomepage('Tambah Experience', Icons.add_circle, Colors.green.shade800),
+    ItemHomepage('Logout', Icons.logout, Colors.red.shade700),
   ];
 
   @override
