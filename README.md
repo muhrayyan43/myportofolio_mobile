@@ -18,9 +18,14 @@ berikutnya, aplikasi ini akan dihubungkan ke API DRF dari situs tersebut.
 ## Fitur
 
 - **Kartu identitas** (`InfoCard`) berisi NPM, nama, dan kelas.
-- **Empat tombol aksi** (`ItemCard`): Lihat Experience, Tambah Experience,
-  Lihat Proyek, dan Logout. Setiap tombol punya warna sendiri dan memunculkan
-  SnackBar "Kamu telah menekan tombol [nama tombol]!".
+- **Lima tombol aksi** (`ItemCard`): Lihat Experience, Tambah Experience,
+  Lihat Proyek, Tambah Proyek, dan Logout. Setiap tombol punya warna sendiri
+  dan memunculkan SnackBar "Kamu telah menekan tombol [nama tombol]!". Tombol
+  Tambah Proyek juga membuka form proyek.
+- **Drawer navigasi** (`LeftDrawer`) untuk berpindah antara halaman utama dan
+  form tambah proyek.
+- **Form tambah proyek** (`ProjectFormPage`) dengan validasi, dropdown kategori,
+  dan pop-up berisi data yang dimasukkan. Data belum disimpan ke database.
 - **Kontras otomatis**: warna teks dan ikon (hitam atau putih) dipilih dari
   warna kartu, dengan kontras minimal 4,5:1 sesuai WCAG AA.
 - **Layout responsif**: grid 2 kolom di HP dan 4 kolom di layar lebar, InfoCard
@@ -35,22 +40,27 @@ berikutnya, aplikasi ini akan dihubungkan ke API DRF dari situs tersebut.
 ```text
 lib/
 ├── main.dart                    # MyApp: MaterialApp dengan tema indigo dan amber
-├── menu.dart                    # MyHomePage: halaman utama dan tata letak responsif
 ├── models/
 │   └── item_homepage.dart       # data tombol aksi: nama, ikon, warna, deskripsi
+├── screens/
+│   ├── menu.dart                # MyHomePage: halaman utama dan tata letak responsif
+│   └── project_form.dart        # ProjectFormPage: form tambah proyek dan pop-up
 ├── utils/
 │   └── color_contrast.dart      # rasio kontras WCAG dan pemilih warna teks
 └── widgets/
     ├── info_card.dart           # kartu NPM / Name / Class
-    ├── item_card.dart           # kartu tombol aksi dan SnackBar-nya
-    └── profile_header.dart      # avatar inisial dan sapaan
+    ├── left_drawer.dart         # drawer navigasi antarhalaman
+    ├── profile_header.dart      # avatar inisial dan sapaan
+    └── project_card.dart        # ItemCard: kartu tombol aksi, SnackBar, navigasi
 test/
-├── test_helpers.dart            # pumpApp, tapAction, leftEdgesOf
+├── test_helpers.dart            # helper aplikasi, navigasi, form, dan ukuran layar
 ├── menu_test.dart               # identitas, daftar tombol, SnackBar, warna
 ├── color_contrast_test.dart     # perhitungan kontras dan warna teks kartu
 ├── responsive_test.dart         # kolom grid, InfoCard, lebar maksimum, landscape
-├── item_card_test.dart          # tooltip, semantics, efek hover/fokus/tekan
-└── profile_header_test.dart     # inisial dan posisi header
+├── project_card_test.dart       # tooltip, semantics, efek hover/fokus/tekan
+├── profile_header_test.dart     # inisial dan posisi header
+├── left_drawer_test.dart        # isi drawer dan stack navigasi
+└── project_form_test.dart       # validasi, pop-up, reset, dan tata letak form
 ```
 
 ## Menjalankan proyek
@@ -89,6 +99,31 @@ Riwayat Tugas 1 sampai 6 (situs web Django) ada di
 |---|---|---|---|
 | 9–11 Nov 2026 | Tutorial 08: Basic Flutter | Proyek dibuat, `menu.dart` dipisah dari `main.dart`, `MyHomePage` menjadi Stateless, InfoCard dan ItemCard contoh | `68e6307` |
 | 12–16 Nov 2026 | Tugas 7: Basic Flutter | Identitas sendiri, empat tombol berwarna, struktur `models/`–`widgets/`–`utils/`, kontras otomatis, layout responsif, aksesibilitas, header profil, 30 test, CI | `chore/tugas-7-groundwork`, `refactor/tugas-7-structure`, `feat/tugas-7-core`, `feat/tugas-7-responsive`, `feat/tugas-7-ux`, `docs/tugas-7-readme` |
+| 18–19 Nov 2026 | Tutorial 09: Navigation, Layouts, Forms | Drawer, form tambah proyek, pop-up data, navigasi tombol, folder `screens/`, migrasi ke `material_ui` | `5d3252d` (belum berisi kode tutorial), `fix/tutorial-9-polish` |
+
+## Tutorial 09
+
+- **Navigasi tombol.** Tambah Proyek memakai `Navigator.push`, jadi tombol Back
+  kembali ke halaman utama.
+- **Navigasi drawer.** Home dan Add Project memakai `Navigator.pushReplacement`.
+  Ada dua pengecualian: memilih halaman yang sedang dibuka hanya menutup drawer
+  agar isian form tidak hilang, dan Home dari form hasil `push` kembali dengan
+  `popUntil` agar halaman utama tidak tertumpuk dua kali.
+- **Form.** Nama dan deskripsi wajib diisi, sedangkan teknologi dan tautan
+  opsional. Setelah OK ditekan, field dan nilai tersimpan dikosongkan.
+- **Perbedaan dari tutorial.** `project_card.dart` tidak mengimpor `menu.dart`
+  karena tidak dipakai, dan nama class tetap `ItemCard`.
+
+#### AI Disclosure
+
+- **Tools:** Claude (Anthropic). Claude menyiapkan kode di lingkungannya sendiri;
+  penerapan patch dan push ke GitHub saya lakukan sendiri.
+- **Bagian yang dibantu AI:** kode drawer dan form, perbaikan navigasi, test, dan
+  pembaruan README ini.
+- **Catatan commit:** `5d3252d` hanya berisi perubahan `pubspec` dan pemindahan
+  file. Kode tutorial baru masuk pada commit sesudahnya.
+- **Verifikasi:** sebelum di-merge, perubahan ini harus lolos `flutter analyze`
+  dan `flutter test` di Flutter 3.47.9.
 
 ## Tugas
 

@@ -9,6 +9,7 @@ import 'package:myportofolio_mobile/utils/color_contrast.dart';
 /// efek hover/fokus/tekan diturunkan dari [readableOn] agar tetap terbaca.
 /// [Semantics] membuat pembaca layar membacakan kartu sebagai satu tombol,
 /// dan [Tooltip] menjelaskan aksinya saat kartu di-hover atau ditekan lama.
+/// Tombol "Tambah Proyek" juga membuka [ProjectFormPage] setelah SnackBar.
 class ItemCard extends StatelessWidget {
   const ItemCard(this.item, {super.key});
 
