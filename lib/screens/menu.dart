@@ -1,9 +1,10 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
-import 'package:myportofolio_mobile/widgets/item_card.dart';
+import 'package:myportofolio_mobile/widgets/project_card.dart';
+import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 import 'package:myportofolio_mobile/widgets/profile_header.dart';
 
 /// Lebar maksimum konten agar kartu tidak melebar berlebihan di tablet dan web.
@@ -51,6 +52,12 @@ class MyHomePage extends StatelessWidget {
       description: 'Lihat proyek yang pernah dikerjakan',
     ),
     ItemHomepage(
+      'Tambah Proyek',
+      Icons.create_new_folder,
+      Colors.teal.shade700,
+      description: 'Tambah proyek baru ke portofolio',
+    ),
+    ItemHomepage(
       'Logout',
       Icons.logout,
       Colors.red.shade700,
@@ -70,7 +77,9 @@ class MyHomePage extends StatelessWidget {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
+      drawer: const LeftDrawer(),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {

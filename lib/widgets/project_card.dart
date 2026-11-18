@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
+import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/utils/color_contrast.dart';
 
 /// Kartu tombol aksi di halaman utama.
@@ -27,7 +28,15 @@ class ItemCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
-            onTap: () => _showPressedMessage(context),
+            onTap: () {
+              _showPressedMessage(context);
+              if (item.name == 'Tambah Proyek') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProjectFormPage()),
+                );
+              }
+            },
             mouseCursor: SystemMouseCursors.click,
             hoverColor: foreground.withValues(alpha: 0.08),
             highlightColor: foreground.withValues(alpha: 0.12),

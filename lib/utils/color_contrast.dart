@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Kontras minimum WCAG 2.x level AA untuk teks berukuran normal.
 const double kMinTextContrast = 4.5;
