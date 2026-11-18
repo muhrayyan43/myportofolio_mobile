@@ -6,15 +6,6 @@ import 'package:myportofolio_mobile/widgets/project_card.dart';
 
 import 'test_helpers.dart';
 
-/// HP dalam posisi potret.
-const portraitPhone = Size(360, 800);
-
-/// HP dalam posisi landscape, layar yang paling pendek.
-const landscapePhone = Size(640, 360);
-
-/// Tablet atau jendela browser yang lebar.
-const wideScreen = Size(1024, 768);
-
 void main() {
   test('actionColumnsFor: 2 kolom di layar sempit, 4 kolom di layar lebar', () {
     expect(actionColumnsFor(kCompactBreakpoint - 1), 2);
