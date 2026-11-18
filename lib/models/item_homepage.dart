@@ -6,12 +6,7 @@ import 'package:material_ui/material_ui.dart';
 /// tanpa percabangan `if-else` per nama tombol. [description] tampil sebagai
 /// Tooltip dan ikut dibacakan oleh pembaca layar.
 class ItemHomepage {
-  const ItemHomepage(
-    this.name,
-    this.icon,
-    this.color, {
-    required this.description,
-  });
+  const ItemHomepage(this.name, this.icon, this.color, {required this.description});
 
   final String name;
   final IconData icon;

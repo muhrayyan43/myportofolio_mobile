@@ -62,9 +62,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                   decoration: InputDecoration(
                     hintText: "Nama Proyek",
                     labelText: "Nama Proyek",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -88,9 +86,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                   decoration: InputDecoration(
                     hintText: "Deskripsi Proyek",
                     labelText: "Deskripsi Proyek",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -112,18 +108,11 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                 child: DropdownButtonFormField<String>(
                   decoration: InputDecoration(
                     labelText: "Kategori Proyek",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                   ),
                   initialValue: _defaultCategory,
                   items: _categories
-                      .map(
-                        (category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(category),
-                        ),
-                      )
+                      .map((category) => DropdownMenuItem(value: category, child: Text(category)))
                       .toList(),
                   onChanged: (String? newValue) {
                     setState(() {
@@ -140,9 +129,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                   decoration: InputDecoration(
                     hintText: "Contoh: Flutter, Django, Figma",
                     labelText: "Teknologi yang Digunakan",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -159,9 +146,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                   decoration: InputDecoration(
                     hintText: "URL Proyek (opsional)",
                     labelText: "Tautan Proyek",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -177,9 +162,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.indigo),
-                    ),
+                    style: ButtonStyle(backgroundColor: WidgetStateProperty.all(Colors.indigo)),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         showDialog(
@@ -213,10 +196,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                         );
                       }
                     },
-                    child: const Text(
-                      "Save",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: const Text("Save", style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ),

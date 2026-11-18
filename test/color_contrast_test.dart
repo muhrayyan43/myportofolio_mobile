@@ -1,5 +1,5 @@
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/utils/color_contrast.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
@@ -43,12 +43,8 @@ void main() {
 
     for (final item in MyHomePage.items) {
       final card = find.widgetWithText(ItemCard, item.name);
-      final icon = tester.widget<Icon>(
-        find.descendant(of: card, matching: find.byIcon(item.icon)),
-      );
-      final label = tester.widget<Text>(
-        find.descendant(of: card, matching: find.text(item.name)),
-      );
+      final icon = tester.widget<Icon>(find.descendant(of: card, matching: find.byIcon(item.icon)));
+      final label = tester.widget<Text>(find.descendant(of: card, matching: find.text(item.name)));
       expect(icon.color, readableOn(item.color));
       expect(label.style?.color, readableOn(item.color));
     }

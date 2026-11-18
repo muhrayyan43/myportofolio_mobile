@@ -1,5 +1,5 @@
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/main.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
 
@@ -28,8 +28,5 @@ Future<void> tapAction(WidgetTester tester, String name) async {
 /// Posisi tepi kiri (dx) yang berbeda dari semua widget yang cocok dengan
 /// [finder]. Untuk kartu dalam grid, jumlahnya sama dengan jumlah kolom.
 Set<double> leftEdgesOf(WidgetTester tester, Finder finder) {
-  return {
-    for (var i = 0; i < finder.evaluate().length; i++)
-      tester.getTopLeft(finder.at(i)).dx,
-  };
+  return {for (var i = 0; i < finder.evaluate().length; i++) tester.getTopLeft(finder.at(i)).dx};
 }

@@ -14,10 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'MyPortfolio',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigo,
-          secondary: Colors.amber[700],
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo, secondary: Colors.amber[700]),
         useMaterial3: true,
       ),
       home: const MyHomePage(),

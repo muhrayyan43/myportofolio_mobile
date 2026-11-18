@@ -17,11 +17,7 @@ class LeftDrawer extends StatelessWidget {
               children: [
                 Text(
                   'My Portfolio',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
                 SizedBox(height: 10),
                 Text(
@@ -47,9 +43,7 @@ class LeftDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const ProjectFormPage(),
-                ),
+                MaterialPageRoute(builder: (context) => const ProjectFormPage()),
               );
             },
           ),

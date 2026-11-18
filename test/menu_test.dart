@@ -1,5 +1,5 @@
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
@@ -21,11 +21,7 @@ void main() {
     expect(find.text('MyPortfolio'), findsOneWidget);
     expect(find.byType(InfoCard), findsNWidgets(3));
 
-    const identitas = {
-      'NPM': '2406496372',
-      'Name': 'Muhammad Rayyan Basalamah',
-      'Class': 'PBP B',
-    };
+    const identitas = {'NPM': '2406496372', 'Name': 'Muhammad Rayyan Basalamah', 'Class': 'PBP B'};
     for (final entry in identitas.entries) {
       final card = find.widgetWithText(InfoCard, entry.key);
       expect(card, findsOneWidget);

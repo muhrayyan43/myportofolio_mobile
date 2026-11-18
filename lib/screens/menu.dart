@@ -3,9 +3,9 @@ import 'dart:math' as math;
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
-import 'package:myportofolio_mobile/widgets/project_card.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 import 'package:myportofolio_mobile/widgets/profile_header.dart';
+import 'package:myportofolio_mobile/widgets/project_card.dart';
 
 /// Lebar maksimum konten agar kartu tidak melebar berlebihan di tablet dan web.
 const double kMaxContentWidth = 720;
@@ -57,12 +57,7 @@ class MyHomePage extends StatelessWidget {
       Colors.teal.shade700,
       description: 'Tambah proyek baru ke portofolio',
     ),
-    ItemHomepage(
-      'Logout',
-      Icons.logout,
-      Colors.red.shade700,
-      description: 'Keluar dari akun',
-    ),
+    ItemHomepage('Logout', Icons.logout, Colors.red.shade700, description: 'Keluar dari akun'),
   ];
 
   static const double _pagePadding = 16;
@@ -97,11 +92,7 @@ class MyHomePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const ProfileHeader(
-                        name: nama,
-                        greeting: sapaan,
-                        subtitle: keterangan,
-                      ),
+                      const ProfileHeader(name: nama, greeting: sapaan, subtitle: keterangan),
                       const SizedBox(height: 16),
                       _buildInfoCards(compact: compact),
                       const SizedBox(height: 24),
