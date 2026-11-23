@@ -123,6 +123,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
                         ),
                         initialValue: _defaultCategory,
+                        isExpanded: true,
                         items: _categories
                             .map(
                               (category) =>
