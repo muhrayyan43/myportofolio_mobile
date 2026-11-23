@@ -1,184 +1,32 @@
-# MyPortfolio Mobile
+# MyPortfolio Mobile — Muhammad Rayyan Basalamah
+- Nama: Muhammad Rayyan Basalamah
+- NPM: 2406496372
+- Kelas: PBP B
 
-[![Flutter CI](https://github.com/muhrayyan43/myportofolio_mobile/actions/workflows/flutter.yml/badge.svg)](https://github.com/muhrayyan43/myportofolio_mobile/actions/workflows/flutter.yml)
+Aplikasi Flutter untuk portofolio saya, pasangan dari situs Django
+[muhrayyan43/myportofolio](https://github.com/muhrayyan43/myportofolio).
 
-Aplikasi mobile Flutter untuk portofolio pribadi saya, dibuat untuk mata kuliah
-Pemrograman Berbasis Platform (PBP) Fasilkom UI, Semester Gasal 2026/2027.
-Aplikasi ini adalah pasangan mobile dari situs portofolio Django saya
-([muhrayyan43/myportofolio](https://github.com/muhrayyan43/myportofolio), live di
-[PWS](https://muhammad-rayyan43-myportofolio.pws.cs.ui.ac.id)). Pada tutorial
-berikutnya, aplikasi ini akan dihubungkan ke API DRF dari situs tersebut.
+## Menjalankan dan menguji
 
-| | |
-|---|---|
-| Nama | Muhammad Rayyan Basalamah |
-| NPM | 2406496372 |
-| Kelas | PBP B |
-
-## Fitur
-
-- **Kartu identitas** (`InfoCard`) berisi NPM, nama, dan kelas.
-- **Lima tombol aksi** (`ItemCard`): Lihat Experience, Tambah Experience,
-  Lihat Proyek, Tambah Proyek, dan Logout. Setiap tombol punya warna sendiri
-  dan memunculkan SnackBar "Kamu telah menekan tombol [nama tombol]!". Tombol
-  Tambah Experience dan Tambah Proyek juga membuka form masing-masing.
-- **Drawer navigasi** (`LeftDrawer`) berisi Home, Add Project, dan Add
-  Experience, dipakai oleh ketiga halaman.
-- **Form tambah proyek** (`ProjectFormPage`) dengan validasi, dropdown kategori,
-  dan pop-up berisi data yang dimasukkan. Data belum disimpan ke database.
-- **Form tambah Experience** (`ExperienceFormPage`) dengan enam field yang
-  mengikuti model `Experience` di situs Django: Judul / Posisi, Deskripsi,
-  Kategori, Thumbnail URL, Tanggal Mulai, dan Tanggal Selesai. Validasinya
-  sama dengan `ExperienceForm`, tanggal dipilih lewat `showDatePicker()`, dan
-  ringkasan isian tampil di dialog setelah Simpan. Fitur tambahannya: checkbox
-  "Masih berlangsung", pratinjau thumbnail, penghitung karakter judul, dan
-  dialog "Batal / Buang" saat meninggalkan form yang sudah diisi.
-- **Tema konsisten**: `AppBarTheme` di `main.dart` memakai `colorScheme.primary`
-  untuk AppBar semua halaman, dan warna yang sama dipakai header drawer serta
-  tombol simpan.
-- **Kontras otomatis**: warna teks dan ikon (hitam atau putih) dipilih dari
-  warna kartu, dengan kontras minimal 4,5:1 sesuai WCAG AA.
-- **Layout responsif**: grid 2 kolom di HP dan 4 kolom di layar lebar, InfoCard
-  bertumpuk di HP dan berjajar di layar lebar, lebar konten maksimal 720 px,
-  dan halaman bisa digulir sehingga tidak overflow di HP posisi landscape.
-- **Aksesibilitas**: setiap kartu dibacakan sebagai tombol oleh pembaca layar,
-  punya Tooltip, dan memberi efek hover, fokus keyboard, serta tekan.
-- **Header profil** dengan avatar inisial dan sapaan.
-
-## Struktur proyek
-
-```text
-lib/
-├── main.dart                        # MyApp dan buildAppTheme: tema indigo–amber, AppBarTheme
-├── models/
-│   ├── experience_category.dart     # pilihan kategori Experience dari model Django
-│   └── item_homepage.dart           # data tombol aksi: nama, ikon, warna, deskripsi, halaman tujuan
-├── screens/
-│   ├── experience_form.dart         # ExperienceFormPage: form, dialog ringkasan, konfirmasi keluar
-│   ├── menu.dart                    # MyHomePage: halaman utama dan tata letak responsif
-│   └── project_form.dart            # ProjectFormPage: form tambah proyek dan pop-up
-├── utils/
-│   ├── color_contrast.dart          # rasio kontras WCAG dan pemilih warna teks
-│   ├── date_format.dart             # format tanggal Indonesia tanpa package intl
-│   └── experience_validators.dart   # validator form Experience (fungsi murni)
-└── widgets/
-    ├── info_card.dart               # kartu NPM / Name / Class
-    ├── left_drawer.dart             # drawer navigasi antarhalaman
-    ├── profile_header.dart          # avatar inisial dan sapaan
-    ├── project_card.dart            # ItemCard: kartu tombol aksi, SnackBar, navigasi
-    └── thumbnail_preview.dart       # pratinjau thumbnail dengan status muat dan gagal
-test/
-├── test_helpers.dart                # helper aplikasi, navigasi, form, dan ukuran layar
-├── experience_helpers.dart          # helper form Experience: field, tanggal, tanggal palsu
-├── menu_test.dart                   # identitas, daftar tombol, SnackBar, warna
-├── color_contrast_test.dart         # perhitungan kontras dan warna teks kartu
-├── responsive_test.dart             # kolom grid, InfoCard, lebar maksimum, landscape
-├── project_card_test.dart           # tooltip, semantics, efek hover/fokus/tekan
-├── profile_header_test.dart         # inisial dan posisi header
-├── left_drawer_test.dart            # isi drawer dan stack navigasi
-├── project_form_test.dart           # validasi, pop-up, reset, dan tata letak form
-├── experience_validators_test.dart  # unit test semua validator Experience
-├── date_format_test.dart            # format tanggal Indonesia
-├── experience_category_test.dart    # pilihan dan label kategori
-├── experience_form_test.dart        # field, validasi, dialog ringkasan, dan reset
-├── experience_navigation_test.dart  # kartu, drawer, stack navigasi, warna tema
-├── experience_extras_test.dart      # Masih berlangsung, pratinjau, penghitung, konfirmasi
-└── experience_layout_test.dart      # overflow di berbagai layar, keyboard, teks besar
-```
-
-## Menjalankan proyek
-
-Prasyarat: Flutter 3.47.9 (channel stable, Dart 3.13.7). Cek dengan
-`flutter doctor`; untuk menjalankan di Chrome, tanda centang pada baris
-Chrome sudah cukup.
+Butuh Flutter 3.47.9 (cek dengan `flutter --version`).
 
 ```powershell
-git clone https://github.com/muhrayyan43/myportofolio_mobile.git
-cd myportofolio_mobile
 flutter pub get
 flutter run -d chrome
-```
-
-Untuk emulator Android atau HP dengan USB debugging, jalankan `flutter run`
-lalu pilih perangkatnya.
-
-## Pengujian dan analisis kode
-
-```powershell
-dart format --set-exit-if-changed lib test
 flutter analyze
 flutter test
 ```
 
-Ketiganya harus bersih: `dart format` tidak mengubah file, `flutter analyze`
-menampilkan "No issues found!", dan `flutter test` menampilkan "All tests
-passed!". Ada 130 test di 14 file, 78 di antaranya untuk form Experience. Untuk
-menjalankan satu file saja, misalnya `flutter test test/experience_form_test.dart`.
-
-Test form Experience tidak bergantung pada tanggal hari ini, karena
-`ExperienceFormPage` menerima parameter `today` yang diisi tanggal tetap
-(20 Agustus 2026) di `test/experience_helpers.dart`.
-
-### Uji manual di Chrome
-
-Jalankan `flutter run -d chrome`, lalu buka DevTools (F12) dan pilih tampilan
-ponsel (Ctrl+Shift+M) untuk layar selebar HP.
-
-1. Tekan kartu **Tambah Experience**: SnackBar muncul dan form terbuka. Tombol
-   kembali membawa ke halaman utama.
-2. Buka drawer dan pilih **Add Experience** dari halaman utama dan dari form
-   proyek.
-3. Kosongkan Judul / Posisi atau Tanggal Mulai, lalu tekan **Simpan**. Pesan
-   error muncul di field tersebut.
-4. Lengkapi isian, tekan **Simpan**, cek dialog, lalu tekan **OK**. Form kembali
-   kosong dan kategori kembali ke Full-Time.
-5. Dari form, pilih **Home** di drawer. Halaman utama tampil dan tombol kembali
-   tidak membuka halaman utama kedua.
-6. Coba fitur tambahan: hapus centang "Masih berlangsung", isi Thumbnail URL
-   (pratinjau muncul), lihat penghitung judul, lalu tinggalkan form yang sudah
-   diisi untuk memunculkan dialog "Batal / Buang".
-
-Kedua perintah ini juga dijalankan otomatis oleh GitHub Actions
-(`.github/workflows/flutter.yml`) setiap kali ada push. Status terakhirnya
-terlihat dari badge di atas.
+`flutter analyze` dan `flutter test` juga dijalankan GitHub Actions setiap push.
 
 ## Progres mingguan
 
-Riwayat Tugas 1 sampai 6 (situs web Django) ada di
-[README repositori Django](https://github.com/muhrayyan43/myportofolio).
-
-| Minggu | Materi | Hasil | Commit / branch |
-|---|---|---|---|
-| 9–11 Nov 2026 | Tutorial 08: Basic Flutter | Proyek dibuat, `menu.dart` dipisah dari `main.dart`, `MyHomePage` menjadi Stateless, InfoCard dan ItemCard contoh | `68e6307` |
-| 12–16 Nov 2026 | Tugas 7: Basic Flutter | Identitas sendiri, empat tombol berwarna, struktur `models/`–`widgets/`–`utils/`, kontras otomatis, layout responsif, aksesibilitas, header profil, 30 test, CI | `chore/tugas-7-groundwork`, `refactor/tugas-7-structure`, `feat/tugas-7-core`, `feat/tugas-7-responsive`, `feat/tugas-7-ux`, `docs/tugas-7-readme` |
-| 18–19 Nov 2026 | Tutorial 09: Navigation, Layouts, Forms | Drawer, form tambah proyek, pop-up data, navigasi tombol, folder `screens/`, migrasi ke `material_ui` | `5d3252d` (belum berisi kode tutorial), lalu 6 commit perbaikan di `main` |
-| 16–24 Nov 2026 | Tugas 8: Navigation, Layouts, Forms | Form tambah Experience sesuai model Django, navigasi dari kartu dan drawer, tema AppBar terpusat, checkbox Masih berlangsung, pratinjau thumbnail, penghitung karakter, konfirmasi keluar, 78 test baru | 4 commit di `main` setelah perbaikan Tutorial 09 |
-
-## Tutorial 09
-
-- **Navigasi tombol.** Tambah Proyek memakai `Navigator.push`, jadi tombol Back
-  kembali ke halaman utama.
-- **Navigasi drawer.** Home dan Add Project memakai `Navigator.pushReplacement`.
-  Ada dua pengecualian: memilih halaman yang sedang dibuka hanya menutup drawer
-  agar isian form tidak hilang, dan Home dari form hasil `push` kembali dengan
-  `popUntil` agar halaman utama tidak tertumpuk dua kali.
-- **Form.** Nama dan deskripsi wajib diisi, sedangkan teknologi dan tautan
-  opsional. Setelah OK ditekan, field dan nilai tersimpan dikosongkan.
-- **Perbedaan dari tutorial.** `project_card.dart` tidak mengimpor `menu.dart`
-  karena tidak dipakai, dan nama class tetap `ItemCard`.
-
-#### AI Disclosure
-
-- **Tools:** Claude (Anthropic). Claude menyiapkan kode di lingkungannya sendiri;
-  penerapan patch dan push ke GitHub saya lakukan sendiri.
-- **Bagian yang dibantu AI:** kode drawer dan form, perbaikan navigasi, test, dan
-  pembaruan README ini.
-- **Catatan commit:** `5d3252d` hanya berisi perubahan `pubspec` dan pemindahan
-  file. Kode tutorial baru masuk pada commit sesudahnya.
-- **Verifikasi:** sebelum di-merge, perubahan ini harus lolos `flutter analyze`
-  dan `flutter test` di Flutter 3.47.9.
-
-## Tugas
+| Tanggal | Tugas | Hasil |
+|---|---|---|
+| 9–11 Nov 2026 | Tutorial 08 | Proyek Flutter, halaman utama dengan InfoCard dan ItemCard |
+| 12–16 Nov 2026 | Tugas 7 | Identitas, tombol berwarna, layout responsif, test, dan CI |
+| 18–19 Nov 2026 | Tutorial 09 | Drawer, form tambah proyek, navigasi, folder `screens/` |
+| 23–24 Nov 2026 | Tugas 8 | Form tambah Experience, navigasi dari kartu dan drawer, fitur tambahan |
 
 ### Tugas 7
 
@@ -365,90 +213,8 @@ Riwayat Tugas 1 sampai 6 (situs web Django) ada di
    `validateEndDate` tetap ngecek dan nampilin "Tanggal selesai tidak boleh
    sebelum tanggal mulai.".
 
-#### Ringkasan implementasi
-
-- **Form sesuai model.** `ExperienceFormPage` (`lib/screens/experience_form.dart`)
-  punya field yang sama dengan model `Experience` dan `ExperienceForm` Django:
-  `title` (wajib, maksimal 255 karakter), `description` (wajib, multiline),
-  `category` (`DropdownButtonFormField` dengan enam pilihan dari
-  `EXPERIENCE_CHOICES`, default Full-Time), `thumbnail` (opsional, keyboard
-  URL, maksimal 200 karakter seperti `URLField`), `started_at` (wajib), dan
-  `ended_at` (opsional). Label dan pesan error berbahasa Indonesia mengikuti
-  `forms.py`, termasuk penolakan isian yang hanya berisi spasi atau tag HTML
-  seperti `strip_tags(...).strip()`.
-- **Validator terpisah.** Semua aturan ada di `lib/utils/experience_validators.dart`
-  sebagai fungsi murni dengan doc comment, sehingga bisa diuji dengan unit test
-  tanpa widget. Pilihan kategori ada di `lib/models/experience_category.dart`,
-  dan format tanggal seperti "5 Agustus 2026" ada di `lib/utils/date_format.dart`
-  tanpa package `intl`.
-- **Tanggal.** Field tanggal `readOnly` dan diisi lewat `showDatePicker()`:
-  tanggal mulai dari 1 Januari 2000 sampai hari ini, dan tanggal selesai mulai
-  dari tanggal mulai. Mengubah tanggal mulai langsung memvalidasi ulang tanggal
-  selesai.
-- **Dialog dan reset.** Simpan memanggil `validate()`, lalu `AlertDialog`
-  menampilkan semua isian yang sudah dibersihkan. Tanggal selesai kosong tampil
-  "Masih berlangsung" dan thumbnail kosong tampil "-". OK mengosongkan field,
-  nilai tersimpan, dan checkbox, serta mengembalikan kategori ke Full-Time.
-- **Navigasi tanpa `if` per tombol.** `ItemHomepage` punya field `pageBuilder`,
-  jadi `ItemCard` cukup `push` halaman dari data, dan pengecekan
-  `item.name == 'Tambah Proyek'` dihapus. Drawer mendapat opsi Add Experience
-  setelah Home dan Add Project, dengan helper `_openPage<T>()` yang sama untuk
-  kedua form.
-- **Tema.** Warna AppBar diatur sekali di `AppBarTheme` (`buildAppTheme()`),
-  dan header drawer serta tombol simpan memakai `colorScheme.primary`.
-- **Fitur tambahan.**
-  - Checkbox "Masih berlangsung" (default dicentang, sesuai `ended_at` kosong
-    di Django) mengosongkan dan menonaktifkan tanggal selesai. Jika centangnya
-    dihapus, tanggal selesai wajib diisi.
-  - `ThumbnailPreview` (`lib/widgets/thumbnail_preview.dart`) tampil hanya
-    untuk URL valid, berukuran tetap 120×120, dengan `loadingBuilder` dan
-    `errorBuilder` ("Gambar tidak bisa dimuat") yang diperkecil agar tidak
-    overflow.
-  - Penghitung karakter Judul / Posisi (`maxLength: 255`) tidak memotong teks
-    hasil paste (`MaxLengthEnforcement.none`), jadi validator yang menolaknya.
-  - Jika form sudah diisi, tombol kembali perangkat, tombol kembali di AppBar,
-    dan navigasi drawer memunculkan dialog "Batal / Buang" lewat `PopScope`
-    dan `LeftDrawer.confirmLeave`. Form kosong atau yang baru di-reset langsung
-    ditinggalkan.
-- **Test.** 78 test baru: unit test validator, kategori, dan format tanggal,
-  serta widget test validasi, dialog, reset, navigasi dari kartu dan drawer,
-  warna tema, keempat fitur tambahan, dan layout di HP 360×640, landscape,
-  layar lebar, saat keyboard tampil, dan saat teks diperbesar.
-- **Verifikasi.** `flutter analyze`, `flutter test`, dan uji manual di Chrome
-  belum dijalankan untuk commit ini.
-
-#### AI Disclosure
-
-- **Tools:** Claude (Anthropic) di claude.ai. Claude meng-clone repo publik ini
-  di workspace cloud-nya, menulis kode dan commit di sana, lalu mengirim
-  hasilnya sebagai file git bundle karena tidak punya akses push. Saya yang
-  menerapkan bundle di laptop Windows, menjalankan `flutter analyze`,
-  `flutter test`, dan uji di Chrome, lalu melakukan push.
-- **Strategi prompting:** saya menulis satu prompt panjang yang berisi
-  spesifikasi field dari `models.py` dan `forms.py`, isi tiap commit, aturan
-  keras (tidak mengubah commit yang sudah dikumpulkan, tidak menambah package,
-  semua commit di `main` tanpa branch), dan aturan verifikasi (tidak boleh
-  mengklaim lolos sebelum perintahnya benar-benar dijalankan). Claude wajib
-  mengirim rencana dan semua pertanyaan dulu sebelum mengubah kode, lalu saya
-  menjawabnya. Prompt lengkap dan ringkasan prompt Tutorial 09 ada di
-  [`docs/ai-prompts.md`](docs/ai-prompts.md).
-- **Bagian yang dibantu AI:** hampir semua kode Tugas 8, yaitu
-  `experience_form.dart`, validator, model kategori, format tanggal,
-  `ThumbnailPreview`, perubahan navigasi di `ItemHomepage`, `ItemCard`, dan
-  `LeftDrawer`, `AppBarTheme`, semua test baru, serta draf jawaban README ini.
-- **Keterbatasan AI:**
-  - Claude tidak bisa menjalankan `flutter test` karena engine Flutter tidak
-    bisa diunduh di workspace-nya. Di sesi Tugas 8, Dart SDK juga tidak boleh
-    dijalankan di sana, jadi `dart format` dan `dart analyze` juga belum
-    dijalankan oleh Claude. Format kode ditulis manual mengikuti gaya
-    `dart format`. Akibatnya, semua test ditulis tanpa pernah dijalankan oleh
-    AI, dan hanya hasil di laptop saya yang membuktikan test itu benar.
-  - Pada Tutorial 09, Claude memberi skrip bash untuk Git Bash, tapi saya
-    menjalankannya di PowerShell sehingga skripnya gagal tanpa terlihat jelas.
-    Akibatnya `5d3252d` hanya berisi perubahan `pubspec` dan pemindahan file,
-    tanpa kode tutorial, dan gagal dianalisis. Claude juga sempat menyebut
-    commit itu aman padahal tanda gagalnya sudah terlihat. Karena itu, di Tugas
-    8 semua perintah untuk saya harus PowerShell, satu perintah per baris, dan
-    tidak boleh ada klaim lolos tanpa bukti.
-- **Perbaikan dan pengecekan manual:** belum ada; bagian ini diperbarui setelah
-  saya menjalankan `flutter analyze`, `flutter test`, dan uji manual di Chrome.
+**Ringkasan implementasi:**
+- `ExperienceFormPage` (`lib/screens/experience_form.dart`) berisi field model `Experience` Django: Judul / Posisi, Deskripsi, Kategori, Thumbnail URL, Tanggal Mulai, dan Tanggal Selesai. Validatornya ada di `lib/utils/experience_validators.dart`.
+- Kartu Tambah Experience membuka form dengan `Navigator.push()`, dan drawer punya opsi Add Experience setelah Home dan Add Project. Halaman tujuan disimpan di `ItemHomepage.pageBuilder`, jadi tidak ada `if` per tombol.
+- Warna AppBar diatur sekali lewat `AppBarTheme` di `main.dart`.
+- Fitur tambahan: checkbox "Masih berlangsung", pratinjau thumbnail, penghitung karakter judul, dan dialog "Batal / Buang" saat meninggalkan form yang sudah diisi.
