@@ -85,7 +85,11 @@ class _PreviewMessage extends StatelessWidget {
               Icon(icon, color: color, size: 36),
               if (text != null) ...[
                 const SizedBox(height: 4),
-                Text(text, textAlign: TextAlign.center, style: TextStyle(color: color)),
+                Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: color),
+                ),
               ],
             ],
           ),

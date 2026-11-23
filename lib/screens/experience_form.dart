@@ -315,7 +315,10 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
     return Padding(
       key: ExperienceFormPage.previewKey,
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-      child: Align(alignment: Alignment.centerLeft, child: ThumbnailPreview(url: url)),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: ThumbnailPreview(url: url),
+      ),
     );
   }
 

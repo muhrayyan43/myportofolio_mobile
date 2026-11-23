@@ -39,7 +39,10 @@ void useScreenSize(WidgetTester tester, Size size) {
 Future<void> pumpExperienceForm(WidgetTester tester, {Size? size}) async {
   if (size != null) useScreenSize(tester, size);
   await tester.pumpWidget(
-    MaterialApp(theme: buildAppTheme(), home: ExperienceFormPage(today: fakeToday)),
+    MaterialApp(
+      theme: buildAppTheme(),
+      home: ExperienceFormPage(today: fakeToday),
+    ),
   );
 }
 
