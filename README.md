@@ -15,6 +15,7 @@ Butuh Flutter 3.47.9 (cek dengan `flutter --version`).
 
 ```powershell
 flutter pub get
+dart run build_runner build --delete-conflicting-outputs
 flutter run -d chrome
 flutter analyze
 flutter test
