@@ -231,15 +231,8 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Experience Form'),
-        centerTitle: true,
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-      ),
+      appBar: AppBar(title: const Text('Add Experience Form'), centerTitle: true),
       drawer: const LeftDrawer(),
       body: SafeArea(
         child: Form(

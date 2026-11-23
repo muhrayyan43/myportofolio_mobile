@@ -1,6 +1,5 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
-import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/utils/color_contrast.dart';
 
 /// Kartu tombol aksi di halaman utama.
@@ -9,7 +8,9 @@ import 'package:myportofolio_mobile/utils/color_contrast.dart';
 /// efek hover/fokus/tekan diturunkan dari [readableOn] agar tetap terbaca.
 /// [Semantics] membuat pembaca layar membacakan kartu sebagai satu tombol,
 /// dan [Tooltip] menjelaskan aksinya saat kartu di-hover atau ditekan lama.
-/// Tombol "Tambah Proyek" juga membuka [ProjectFormPage] setelah SnackBar.
+/// Jika [ItemHomepage.pageBuilder] diisi, halaman itu dibuka dengan
+/// `Navigator.push` setelah SnackBar, sehingga tombol kembali perangkat
+/// membawa pengguna ke halaman utama lagi.
 class ItemCard extends StatelessWidget {
   const ItemCard(this.item, {super.key});
 
@@ -31,11 +32,9 @@ class ItemCard extends StatelessWidget {
           child: InkWell(
             onTap: () {
               _showPressedMessage(context);
-              if (item.name == 'Tambah Proyek') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProjectFormPage()),
-                );
+              final pageBuilder = item.pageBuilder;
+              if (pageBuilder != null) {
+                Navigator.push(context, MaterialPageRoute(builder: pageBuilder));
               }
             },
             mouseCursor: SystemMouseCursors.click,

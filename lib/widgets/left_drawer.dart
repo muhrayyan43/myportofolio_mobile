@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
 
@@ -30,26 +31,26 @@ class LeftDrawer extends StatelessWidget {
     }
   }
 
-  /// Membuka form tambah proyek menggantikan halaman yang sedang tampil.
-  void _openProjectForm(BuildContext context) {
-    if (_isOnPage<ProjectFormPage>(context)) {
+  /// Membuka halaman bertipe [T] dari [builder] menggantikan halaman yang
+  /// sedang tampil. Jika halaman itu sedang terbuka, drawer cukup ditutup.
+  void _openPage<T extends Widget>(BuildContext context, WidgetBuilder builder) {
+    if (_isOnPage<T>(context)) {
       Navigator.pop(context);
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const ProjectFormPage()),
-      );
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: builder));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.indigo),
+          DrawerHeader(
+            decoration: BoxDecoration(color: colorScheme.primary),
             // Tinggi header tetap, jadi teks yang diperbesar perlu bisa digulir.
             child: SingleChildScrollView(
               child: Column(
@@ -60,13 +61,13 @@ class LeftDrawer extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: colorScheme.onPrimary,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     'Explore personal projects and experiences!',
-                    style: TextStyle(fontSize: 15, color: Colors.white),
+                    style: TextStyle(fontSize: 15, color: colorScheme.onPrimary),
                   ),
                 ],
               ),
@@ -80,7 +81,12 @@ class LeftDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.add_circle_outline),
             title: const Text('Add Project'),
-            onTap: () => _openProjectForm(context),
+            onTap: () => _openPage<ProjectFormPage>(context, (_) => const ProjectFormPage()),
+          ),
+          ListTile(
+            leading: const Icon(Icons.work_outline),
+            title: const Text('Add Experience'),
+            onTap: () => _openPage<ExperienceFormPage>(context, (_) => const ExperienceFormPage()),
           ),
         ],
       ),

@@ -51,12 +51,10 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(child: Text('Add Project Form')),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
-      ),
+      appBar: AppBar(title: const Center(child: Text('Add Project Form'))),
       drawer: const LeftDrawer(),
       body: SafeArea(
         child: Form(
@@ -180,7 +178,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(Colors.indigo),
+                            backgroundColor: WidgetStateProperty.all(colorScheme.primary),
                           ),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
@@ -215,7 +213,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                               );
                             }
                           },
-                          child: const Text("Save", style: TextStyle(color: Colors.white)),
+                          child: Text("Save", style: TextStyle(color: colorScheme.onPrimary)),
                         ),
                       ),
                     ),

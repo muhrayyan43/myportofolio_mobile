@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
+import 'package:myportofolio_mobile/screens/experience_form.dart';
+import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 import 'package:myportofolio_mobile/widgets/profile_header.dart';
@@ -44,6 +46,7 @@ class MyHomePage extends StatelessWidget {
       Icons.add_circle,
       Colors.green.shade800,
       description: 'Tambah pengalaman baru ke portofolio',
+      pageBuilder: (_) => const ExperienceFormPage(),
     ),
     ItemHomepage(
       'Lihat Proyek',
@@ -56,6 +59,7 @@ class MyHomePage extends StatelessWidget {
       Icons.create_new_folder,
       Colors.teal.shade700,
       description: 'Tambah proyek baru ke portofolio',
+      pageBuilder: (_) => const ProjectFormPage(),
     ),
     ItemHomepage('Logout', Icons.logout, Colors.red.shade700, description: 'Keluar dari akun'),
   ];
@@ -67,12 +71,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'MyPortfolio',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text('MyPortfolio', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       drawer: const LeftDrawer(),
       body: SafeArea(

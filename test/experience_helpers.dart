@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/main.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
 
 /// Tanggal "hari ini" palsu, agar test tidak bergantung pada tanggal nyata.
@@ -24,10 +25,13 @@ void useScreenSize(WidgetTester tester, Size size) {
   addTearDown(tester.view.reset);
 }
 
-/// Membuka form Experience sebagai halaman pertama dengan [fakeToday].
+/// Membuka form Experience sebagai halaman pertama dengan [fakeToday] dan
+/// tema aplikasi.
 Future<void> pumpExperienceForm(WidgetTester tester, {Size? size}) async {
   if (size != null) useScreenSize(tester, size);
-  await tester.pumpWidget(MaterialApp(home: ExperienceFormPage(today: fakeToday)));
+  await tester.pumpWidget(
+    MaterialApp(theme: buildAppTheme(), home: ExperienceFormPage(today: fakeToday)),
+  );
 }
 
 /// Field teks di dalam pembungkus ber-[key] pada form Experience.
