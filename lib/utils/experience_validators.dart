@@ -97,10 +97,14 @@ String? validateStartDate(DateTime? value) {
 /// Validator Tanggal Selesai.
 ///
 /// Tanggal kosong berarti Experience masih berlangsung (`is_ongoing` di
-/// Django), jadi boleh kosong. Jika diisi, tanggalnya tidak boleh sebelum
-/// [start], sama seperti `ExperienceForm.clean()`. Jam diabaikan.
-String? validateEndDate(DateTime? end, {DateTime? start}) {
-  if (end == null) return null;
+/// Django), jadi boleh kosong, kecuali [requireEndDate] bernilai `true`
+/// karena pengguna menghapus centang "Masih berlangsung". Jika diisi,
+/// tanggalnya tidak boleh sebelum [start], sama seperti
+/// `ExperienceForm.clean()`. Jam diabaikan.
+String? validateEndDate(DateTime? end, {DateTime? start, bool requireEndDate = false}) {
+  if (end == null) {
+    return requireEndDate ? 'Isi tanggal selesai atau centang "Masih berlangsung".' : null;
+  }
   if (start != null && dateOnly(end).isBefore(dateOnly(start))) {
     return 'Tanggal selesai tidak boleh sebelum tanggal mulai.';
   }

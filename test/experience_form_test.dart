@@ -21,7 +21,7 @@ void main() {
       expect(find.text(label), findsOneWidget, reason: label);
     }
     expect(find.text('Tanggal Mulai'), findsOneWidget);
-    expect(find.text('Tanggal Selesai (kosongkan jika masih berjalan)'), findsOneWidget);
+    expect(find.text('Tanggal Selesai'), findsOneWidget);
     expect(tester.state<FormFieldState<String>>(categoryDropdown).value, 'full-time');
     expect(find.text('Full-Time'), findsOneWidget);
   });
@@ -105,6 +105,7 @@ void main() {
 
   testWidgets('tanggal selesai sebelum tanggal mulai ditolak dan divalidasi ulang', (tester) async {
     await pumpExperienceForm(tester);
+    await tapOngoing(tester);
     await pickDate(tester, endDateKey, 10);
     await pickDate(tester, startDateKey, 15);
 
@@ -137,6 +138,7 @@ void main() {
     await fillRequiredExperience(tester);
     await selectCategory(tester, 'Research');
     await enterExperienceText(tester, thumbnailKey, 'https://example.com/logo.png');
+    await tapOngoing(tester);
     await pickDate(tester, endDateKey, 15);
     await tapSave(tester);
 
@@ -163,6 +165,7 @@ void main() {
     await fillRequiredExperience(tester);
     await selectCategory(tester, 'Volunteer');
     await enterExperienceText(tester, thumbnailKey, 'https://example.com/logo.png');
+    await tapOngoing(tester);
     await pickDate(tester, endDateKey, 15);
     await tapSave(tester);
     await tester.tap(find.widgetWithText(TextButton, 'OK'));
@@ -173,6 +176,7 @@ void main() {
       expect(experienceFieldText(tester, key), isEmpty);
     }
     expect(tester.state<FormFieldState<String>>(categoryDropdown).value, 'full-time');
+    expect(tester.widget<Checkbox>(ongoingCheckbox).value, isTrue);
 
     // Nilai tersimpan ikut dikosongkan, jadi field wajib kembali ditolak.
     await tapSave(tester);
@@ -185,6 +189,7 @@ void main() {
     await fillRequiredExperience(tester);
     await selectCategory(tester, 'Freelance');
     await enterExperienceText(tester, thumbnailKey, 'https://example.com/logo.png');
+    await tapOngoing(tester);
     await pickDate(tester, endDateKey, 15);
     await tapSave(tester);
     await tester.tap(find.widgetWithText(TextButton, 'OK'));

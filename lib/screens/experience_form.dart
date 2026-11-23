@@ -1,9 +1,11 @@
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/experience_category.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/utils/date_format.dart';
 import 'package:myportofolio_mobile/utils/experience_validators.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
+import 'package:myportofolio_mobile/widgets/thumbnail_preview.dart';
 
 /// Ruang di bawah tombol Simpan agar tombol itu tetap bisa digulir ke atas
 /// SnackBar yang masih tampil setelah berpindah dari halaman utama.
@@ -15,6 +17,10 @@ const double _bottomClearance = 72;
 /// `ExperienceForm` di situs Django. Data belum dikirim ke server: setelah
 /// semua isian lolos validasi, ringkasannya ditampilkan di [AlertDialog], lalu
 /// form dikosongkan saat dialog ditutup dengan tombol OK.
+///
+/// Jika form sudah diisi, meninggalkan halaman lewat tombol kembali
+/// perangkat, tombol kembali di AppBar, atau drawer menampilkan dialog
+/// "Batal / Buang" terlebih dahulu ([PopScope] dan [LeftDrawer.confirmLeave]).
 class ExperienceFormPage extends StatefulWidget {
   /// [today] hanya perlu diisi oleh test, agar batas pemilih tanggal tidak
   /// bergantung pada tanggal saat test dijalankan.
@@ -34,6 +40,8 @@ class ExperienceFormPage extends StatefulWidget {
   static const Key thumbnailKey = ValueKey<String>('experience-thumbnail');
   static const Key startDateKey = ValueKey<String>('experience-start-date');
   static const Key endDateKey = ValueKey<String>('experience-end-date');
+  static const Key ongoingKey = ValueKey<String>('experience-ongoing');
+  static const Key previewKey = ValueKey<String>('experience-thumbnail-preview');
 
   @override
   State<ExperienceFormPage> createState() => _ExperienceFormPageState();
@@ -45,6 +53,7 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
       DropdownMenuItem(value: category.value, child: Text(category.label)),
   ];
 
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   final _startDateFieldKey = GlobalKey<FormFieldState<String>>();
   final _endDateFieldKey = GlobalKey<FormFieldState<String>>();
@@ -57,8 +66,20 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
   String _thumbnail = '';
   DateTime? _startDate;
   DateTime? _endDate;
+  bool _ongoing = true;
 
   DateTime get _today => dateOnly(widget.today ?? DateTime.now());
+
+  /// Apakah ada isian yang berbeda dari keadaan awal form. Form yang kosong
+  /// atau baru di-reset boleh ditinggalkan tanpa konfirmasi.
+  bool get _isDirty =>
+      _title.isNotEmpty ||
+      _description.isNotEmpty ||
+      _thumbnail.isNotEmpty ||
+      _category != kDefaultExperienceCategory ||
+      _startDate != null ||
+      _endDate != null ||
+      !_ongoing;
 
   @override
   void dispose() {
@@ -124,6 +145,60 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
     _revalidate(_endDateFieldKey);
   }
 
+  /// Mencentang atau menghapus centang "Masih berlangsung". Jika dicentang,
+  /// tanggal selesai dikosongkan beserta pesan error-nya.
+  void _setOngoing(bool ongoing) {
+    setState(() {
+      _ongoing = ongoing;
+      if (ongoing) _endDate = null;
+    });
+    if (ongoing) _endDateFieldKey.currentState?.reset();
+  }
+
+  /// Menanyakan apakah isian boleh dibuang. Form yang belum diisi langsung
+  /// boleh ditinggalkan.
+  Future<bool> _confirmDiscard() async {
+    if (!_isDirty) return true;
+
+    final discard = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Buang isian?'),
+          content: const Text('Isian form Experience belum disimpan dan akan hilang.'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Buang')),
+          ],
+        );
+      },
+    );
+    return discard ?? false;
+  }
+
+  /// Dipanggil [PopScope] saat pengguna mencoba kembali padahal form sudah
+  /// diisi. Drawer yang terbuka cukup ditutup; selain itu, halaman baru
+  /// ditinggalkan setelah pengguna memilih Buang.
+  Future<void> _handleBlockedPop(bool didPop, Object? result) async {
+    if (didPop) return;
+    final scaffold = _scaffoldKey.currentState;
+    if (scaffold != null && scaffold.isDrawerOpen) {
+      scaffold.closeDrawer();
+      return;
+    }
+
+    final discard = await _confirmDiscard();
+    if (!discard) return;
+    if (!mounted) return;
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      // Form adalah halaman pertama, jadi kembali berarti keluar aplikasi.
+      await SystemNavigator.pop();
+    }
+  }
+
   /// Mengosongkan field sekaligus nilai yang tersimpan dan mengembalikan
   /// kategori ke Full-Time, supaya isian lama tidak muncul lagi.
   void _resetForm() {
@@ -135,6 +210,7 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
       _thumbnail = '';
       _startDate = null;
       _endDate = null;
+      _ongoing = true;
     });
   }
 
@@ -213,10 +289,12 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
     required String label,
     required VoidCallback onTap,
     required FormFieldValidator<String> validator,
+    bool enabled = true,
   }) {
     return TextFormField(
       key: fieldKey,
       controller: controller,
+      enabled: enabled,
       readOnly: true,
       showCursor: false,
       decoration: _decoration(
@@ -229,104 +307,153 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
     );
   }
 
+  /// Pratinjau thumbnail, hanya saat URL yang diisi valid.
+  Widget _buildThumbnailPreview() {
+    final url = _thumbnail.trim();
+    if (url.isEmpty || validateThumbnailUrl(url) != null) return const SizedBox.shrink();
+
+    return Padding(
+      key: ExperienceFormPage.previewKey,
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+      child: Align(alignment: Alignment.centerLeft, child: ThumbnailPreview(url: url)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Add Experience Form'), centerTitle: true),
-      drawer: const LeftDrawer(),
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, _bottomClearance),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: kMaxContentWidth),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _field(
-                      ExperienceFormPage.titleKey,
-                      TextFormField(
-                        textInputAction: TextInputAction.next,
-                        decoration: _decoration(
-                          'Judul / Posisi',
-                          hint: 'Software Engineer Intern @ Company',
+    // Form yang dibuka dengan push mendapat tombol kembali di AppBar, dan
+    // tombol drawer pindah ke sisi kanan.
+    final pushed = !(ModalRoute.of(context)?.isFirst ?? true);
+
+    return PopScope<Object?>(
+      canPop: !_isDirty,
+      onPopInvokedWithResult: _handleBlockedPop,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: const Text('Add Experience Form'),
+          centerTitle: true,
+          leading: pushed ? const BackButton() : null,
+          actions: pushed ? const [DrawerButton()] : null,
+        ),
+        drawer: LeftDrawer(confirmLeave: _confirmDiscard),
+        body: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, _bottomClearance),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: kMaxContentWidth),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _field(
+                        ExperienceFormPage.titleKey,
+                        TextFormField(
+                          textInputAction: TextInputAction.next,
+                          // Penghitung tidak memotong teks hasil paste; teks yang lebih
+                          // dari 255 karakter tetap ditolak oleh validator.
+                          maxLength: kTitleMaxLength,
+                          maxLengthEnforcement: MaxLengthEnforcement.none,
+                          decoration: _decoration(
+                            'Judul / Posisi',
+                            hint: 'Software Engineer Intern @ Company',
+                          ),
+                          onChanged: (value) => setState(() => _title = value),
+                          autovalidateMode: AutovalidateMode.onUserInteractionIfError,
+                          validator: validateExperienceTitle,
                         ),
-                        onChanged: (value) => setState(() => _title = value),
-                        autovalidateMode: AutovalidateMode.onUserInteractionIfError,
-                        validator: validateExperienceTitle,
                       ),
-                    ),
-                    _field(
-                      ExperienceFormPage.descriptionKey,
-                      TextFormField(
-                        keyboardType: TextInputType.multiline,
-                        minLines: 3,
-                        maxLines: 6,
-                        decoration: _decoration(
-                          'Deskripsi',
-                          hint: 'Ceritakan apa yang kamu kerjakan di sini',
+                      _field(
+                        ExperienceFormPage.descriptionKey,
+                        TextFormField(
+                          keyboardType: TextInputType.multiline,
+                          minLines: 3,
+                          maxLines: 6,
+                          decoration: _decoration(
+                            'Deskripsi',
+                            hint: 'Ceritakan apa yang kamu kerjakan di sini',
+                          ),
+                          onChanged: (value) => setState(() => _description = value),
+                          autovalidateMode: AutovalidateMode.onUserInteractionIfError,
+                          validator: validateExperienceDescription,
                         ),
-                        onChanged: (value) => setState(() => _description = value),
-                        autovalidateMode: AutovalidateMode.onUserInteractionIfError,
-                        validator: validateExperienceDescription,
                       ),
-                    ),
-                    _field(
-                      ExperienceFormPage.categoryKey,
-                      DropdownButtonFormField<String>(
-                        initialValue: kDefaultExperienceCategory,
-                        isExpanded: true,
-                        decoration: _decoration('Kategori'),
-                        items: _categoryItems,
-                        onChanged: (value) {
-                          setState(() => _category = value ?? kDefaultExperienceCategory);
-                        },
-                      ),
-                    ),
-                    _field(
-                      ExperienceFormPage.thumbnailKey,
-                      TextFormField(
-                        keyboardType: TextInputType.url,
-                        autocorrect: false,
-                        textInputAction: TextInputAction.done,
-                        decoration: _decoration(
-                          'Thumbnail URL',
-                          hint: 'https://.../logo.png',
-                          helper: 'Opsional',
+                      _field(
+                        ExperienceFormPage.categoryKey,
+                        DropdownButtonFormField<String>(
+                          initialValue: kDefaultExperienceCategory,
+                          isExpanded: true,
+                          decoration: _decoration('Kategori'),
+                          items: _categoryItems,
+                          onChanged: (value) {
+                            setState(() => _category = value ?? kDefaultExperienceCategory);
+                          },
                         ),
-                        onChanged: (value) => setState(() => _thumbnail = value),
-                        autovalidateMode: AutovalidateMode.onUserInteractionIfError,
-                        validator: validateThumbnailUrl,
                       ),
-                    ),
-                    _field(
-                      ExperienceFormPage.startDateKey,
-                      _dateField(
-                        fieldKey: _startDateFieldKey,
-                        controller: _startDateController,
-                        label: 'Tanggal Mulai',
-                        onTap: _pickStartDate,
-                        validator: (_) => validateStartDate(_startDate),
+                      _field(
+                        ExperienceFormPage.thumbnailKey,
+                        TextFormField(
+                          keyboardType: TextInputType.url,
+                          autocorrect: false,
+                          textInputAction: TextInputAction.done,
+                          decoration: _decoration(
+                            'Thumbnail URL',
+                            hint: 'https://.../logo.png',
+                            helper: 'Opsional',
+                          ),
+                          onChanged: (value) => setState(() => _thumbnail = value),
+                          autovalidateMode: AutovalidateMode.onUserInteractionIfError,
+                          validator: validateThumbnailUrl,
+                        ),
                       ),
-                    ),
-                    _field(
-                      ExperienceFormPage.endDateKey,
-                      _dateField(
-                        fieldKey: _endDateFieldKey,
-                        controller: _endDateController,
-                        label: 'Tanggal Selesai (kosongkan jika masih berjalan)',
-                        onTap: _pickEndDate,
-                        validator: (_) => validateEndDate(_endDate, start: _startDate),
+                      _buildThumbnailPreview(),
+                      _field(
+                        ExperienceFormPage.startDateKey,
+                        _dateField(
+                          fieldKey: _startDateFieldKey,
+                          controller: _startDateController,
+                          label: 'Tanggal Mulai',
+                          onTap: _pickStartDate,
+                          validator: (_) => validateStartDate(_startDate),
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
-                      child: FilledButton(onPressed: _submit, child: const Text('Simpan')),
-                    ),
-                  ],
+                      Padding(
+                        key: ExperienceFormPage.ongoingKey,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: CheckboxListTile(
+                          value: _ongoing,
+                          onChanged: (value) => _setOngoing(value ?? false),
+                          title: const Text('Masih berlangsung'),
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                      _field(
+                        ExperienceFormPage.endDateKey,
+                        _dateField(
+                          fieldKey: _endDateFieldKey,
+                          controller: _endDateController,
+                          label: 'Tanggal Selesai',
+                          enabled: !_ongoing,
+                          onTap: _pickEndDate,
+                          validator: (_) {
+                            return validateEndDate(
+                              _endDate,
+                              start: _startDate,
+                              requireEndDate: !_ongoing,
+                            );
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
+                        child: FilledButton(onPressed: _submit, child: const Text('Simpan')),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

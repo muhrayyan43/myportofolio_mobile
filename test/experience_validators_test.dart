@@ -135,5 +135,17 @@ void main() {
     test('tidak bisa dibandingkan jika tanggal mulai belum diisi', () {
       expect(validateEndDate(DateTime(2026, 8, 4)), isNull);
     });
+
+    test('wajib diisi jika "Masih berlangsung" tidak dicentang', () {
+      expect(
+        validateEndDate(null, start: start, requireEndDate: true),
+        'Isi tanggal selesai atau centang "Masih berlangsung".',
+      );
+      expect(validateEndDate(DateTime(2026, 8, 6), start: start, requireEndDate: true), isNull);
+      expect(
+        validateEndDate(DateTime(2026, 8, 4), start: start, requireEndDate: true),
+        beforeError,
+      );
+    });
   });
 }

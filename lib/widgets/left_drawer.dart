@@ -9,7 +9,12 @@ import 'package:myportofolio_mobile/screens/project_form.dart';
 /// form tidak hilang. Stack navigasi juga dijaga agar halaman utama tidak
 /// pernah tertumpuk dua kali.
 class LeftDrawer extends StatelessWidget {
-  const LeftDrawer({super.key});
+  const LeftDrawer({super.key, this.confirmLeave});
+
+  /// Dipanggil sebelum drawer membawa pengguna ke halaman lain. Jika hasilnya
+  /// `false`, perpindahan dibatalkan. Form Experience memakainya untuk
+  /// menanyakan apakah isian yang belum disimpan boleh dibuang.
+  final Future<bool> Function()? confirmLeave;
 
   /// Apakah drawer ini sedang berada di dalam halaman bertipe [T].
   bool _isOnPage<T extends Widget>(BuildContext context) {
@@ -18,10 +23,16 @@ class LeftDrawer extends StatelessWidget {
 
   /// Kembali ke halaman utama. Jika form dibuka dengan `push` dari halaman
   /// utama, halaman utama masih ada di bawahnya sehingga cukup kembali ke sana.
-  void _openHome(BuildContext context) {
+  Future<void> _openHome(BuildContext context) async {
     if (_isOnPage<MyHomePage>(context)) {
       Navigator.pop(context);
-    } else if (ModalRoute.of(context)?.isFirst ?? true) {
+      return;
+    }
+    final confirm = confirmLeave;
+    if (confirm != null && !await confirm()) return;
+    if (!context.mounted) return;
+
+    if (ModalRoute.of(context)?.isFirst ?? true) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const MyHomePage()),
@@ -33,12 +44,16 @@ class LeftDrawer extends StatelessWidget {
 
   /// Membuka halaman bertipe [T] dari [builder] menggantikan halaman yang
   /// sedang tampil. Jika halaman itu sedang terbuka, drawer cukup ditutup.
-  void _openPage<T extends Widget>(BuildContext context, WidgetBuilder builder) {
+  Future<void> _openPage<T extends Widget>(BuildContext context, WidgetBuilder builder) async {
     if (_isOnPage<T>(context)) {
       Navigator.pop(context);
-    } else {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: builder));
+      return;
     }
+    final confirm = confirmLeave;
+    if (confirm != null && !await confirm()) return;
+    if (!context.mounted) return;
+
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: builder));
   }
 
   @override

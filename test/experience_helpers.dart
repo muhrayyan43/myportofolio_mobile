@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/main.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
+import 'package:myportofolio_mobile/screens/menu.dart';
 
 /// Tanggal "hari ini" palsu, agar test tidak bergantung pada tanggal nyata.
 final DateTime fakeToday = DateTime(2026, 8, 20);
@@ -11,6 +14,12 @@ const descriptionKey = ExperienceFormPage.descriptionKey;
 const thumbnailKey = ExperienceFormPage.thumbnailKey;
 const startDateKey = ExperienceFormPage.startDateKey;
 const endDateKey = ExperienceFormPage.endDateKey;
+
+/// Checkbox "Masih berlangsung".
+final Finder ongoingCheckbox = find.descendant(
+  of: find.byKey(ExperienceFormPage.ongoingKey),
+  matching: find.byType(Checkbox),
+);
 
 /// Dropdown kategori pada form Experience.
 final Finder categoryDropdown = find.byType(DropdownButtonFormField<String>);
@@ -32,6 +41,26 @@ Future<void> pumpExperienceForm(WidgetTester tester, {Size? size}) async {
   await tester.pumpWidget(
     MaterialApp(theme: buildAppTheme(), home: ExperienceFormPage(today: fakeToday)),
   );
+}
+
+/// Membuka form Experience dengan push di atas halaman utama, seperti dari
+/// kartu Tambah Experience, tetapi dengan [fakeToday].
+Future<void> pushExperienceForm(WidgetTester tester, {Size? size}) async {
+  if (size != null) useScreenSize(tester, size);
+  await tester.pumpWidget(MaterialApp(theme: buildAppTheme(), home: const MyHomePage()));
+  final navigator = tester.state<NavigatorState>(find.byType(Navigator));
+  unawaited(
+    navigator.push(MaterialPageRoute<void>(builder: (_) => ExperienceFormPage(today: fakeToday))),
+  );
+  await tester.pumpAndSettle();
+}
+
+/// Mencentang atau menghapus centang "Masih berlangsung".
+Future<void> tapOngoing(WidgetTester tester) async {
+  await tester.ensureVisible(ongoingCheckbox);
+  await tester.pumpAndSettle();
+  await tester.tap(ongoingCheckbox);
+  await tester.pumpAndSettle();
 }
 
 /// Field teks di dalam pembungkus ber-[key] pada form Experience.
