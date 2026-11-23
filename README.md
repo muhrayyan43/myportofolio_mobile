@@ -1,4 +1,7 @@
 # MyPortfolio Mobile — Muhammad Rayyan Basalamah
+
+[![CI](https://github.com/muhrayyan43/myportofolio_mobile/actions/workflows/main.yaml/badge.svg)](https://github.com/muhrayyan43/myportofolio_mobile/actions/workflows/main.yaml)
+
 - Nama: Muhammad Rayyan Basalamah
 - NPM: 2406496372
 - Kelas: PBP B
@@ -17,7 +20,9 @@ flutter analyze
 flutter test
 ```
 
-`flutter analyze` dan `flutter test` juga dijalankan GitHub Actions setiap push.
+Setiap push ke `main`, GitHub Actions (`.github/workflows/main.yaml`) menjalankan
+very_good_workflows (`dart format`, `flutter analyze`, dan `flutter test`), lalu membangun
+APK release yang bisa diunduh sebagai artefak `app-release-apk` di tab Actions.
 
 ## Progres mingguan
 
