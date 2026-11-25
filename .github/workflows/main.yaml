@@ -10,17 +10,16 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   build:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v2
     with:
       # Same version as the laptop, so dart format gives the same result here.
       flutter_version: "3.47.9"
-      setup: dart run build_runner build --delete-conflicting-outputs
+      # build_runner output ignores page_width: 100, so format it before the check.
+      setup: |
+        dart run build_runner build
+        dart format $(find lib -name "*.g.dart")
       coverage_excludes: "**/*.g.dart"
       min_coverage: 0
       timeout_minutes: 15
@@ -41,7 +40,7 @@ jobs:
           flutter-version: 3.47.9
           cache: true
       - run: flutter pub get
-      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: dart run build_runner build
       - run: flutter build apk --release
       - uses: actions/upload-artifact@v4
         with:
