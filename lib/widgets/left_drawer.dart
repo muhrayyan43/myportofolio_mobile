@@ -3,6 +3,9 @@ import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/screens/project_list.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
+import 'package:provider/provider.dart';
 
 /// Menu navigasi dari sisi kiri layar, dipakai oleh semua halaman.
 ///
@@ -17,13 +20,10 @@ class LeftDrawer extends StatelessWidget {
   /// menanyakan apakah isian yang belum disimpan boleh dibuang.
   final Future<bool> Function()? confirmLeave;
 
-  /// Apakah drawer ini sedang berada di dalam halaman bertipe [T].
   bool _isOnPage<T extends Widget>(BuildContext context) {
     return context.findAncestorWidgetOfExactType<T>() != null;
   }
 
-  /// Kembali ke halaman utama. Jika form dibuka dengan `push` dari halaman
-  /// utama, halaman utama masih ada di bawahnya sehingga cukup kembali ke sana.
   Future<void> _openHome(BuildContext context) async {
     if (_isOnPage<MyHomePage>(context)) {
       Navigator.pop(context);
@@ -43,8 +43,6 @@ class LeftDrawer extends StatelessWidget {
     }
   }
 
-  /// Membuka halaman bertipe [T] dari [builder] menggantikan halaman yang
-  /// sedang tampil. Jika halaman itu sedang terbuka, drawer cukup ditutup.
   Future<void> _openPage<T extends Widget>(BuildContext context, WidgetBuilder builder) async {
     if (_isOnPage<T>(context)) {
       Navigator.pop(context);
@@ -57,9 +55,26 @@ class LeftDrawer extends StatelessWidget {
     Navigator.pushReplacement(context, MaterialPageRoute(builder: builder));
   }
 
+  Future<void> _openProtected<T extends Widget>(BuildContext context, WidgetBuilder builder) async {
+    if (!await ensureLoggedIn(context)) return;
+    if (!context.mounted) return;
+    await _openPage<T>(context, builder);
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    await context.read<AuthState>().logout();
+    navigator.pop();
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(const SnackBar(content: Text('Kamu sudah logout.')));
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isLoggedIn = context.watch<AuthState>().isLoggedIn;
 
     return Drawer(
       child: ListView(
@@ -67,7 +82,6 @@ class LeftDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(color: colorScheme.primary),
-            // Tinggi header tetap, jadi teks yang diperbesar perlu bisa digulir.
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +111,7 @@ class LeftDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.add_circle_outline),
             title: const Text('Add Project'),
-            onTap: () => _openPage<ProjectFormPage>(context, (_) => const ProjectFormPage()),
+            onTap: () => _openProtected<ProjectFormPage>(context, (_) => const ProjectFormPage()),
           ),
           ListTile(
             leading: const Icon(Icons.folder_outlined),
@@ -107,7 +121,17 @@ class LeftDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.work_outline),
             title: const Text('Add Experience'),
-            onTap: () => _openPage<ExperienceFormPage>(context, (_) => const ExperienceFormPage()),
+            onTap: () =>
+                _openProtected<ExperienceFormPage>(context, (_) => const ExperienceFormPage()),
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: OutlinedButton.icon(
+              onPressed: isLoggedIn ? () => _logout(context) : () => ensureLoggedIn(context),
+              icon: Icon(isLoggedIn ? Icons.logout : Icons.login),
+              label: Text(isLoggedIn ? 'Logout' : 'Login'),
+            ),
           ),
         ],
       ),

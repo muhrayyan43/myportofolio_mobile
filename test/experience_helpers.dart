@@ -6,6 +6,8 @@ import 'package:myportofolio_mobile/main.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 
+import 'test_helpers.dart';
+
 /// Tanggal "hari ini" palsu, agar test tidak bergantung pada tanggal nyata.
 final DateTime fakeToday = DateTime(2026, 8, 20);
 
@@ -39,9 +41,11 @@ void useScreenSize(WidgetTester tester, Size size) {
 Future<void> pumpExperienceForm(WidgetTester tester, {Size? size}) async {
   if (size != null) useScreenSize(tester, size);
   await tester.pumpWidget(
-    MaterialApp(
-      theme: buildAppTheme(),
-      home: ExperienceFormPage(today: fakeToday),
+    withProviders(
+      MaterialApp(
+        theme: buildAppTheme(),
+        home: ExperienceFormPage(today: fakeToday),
+      ),
     ),
   );
 }
@@ -50,7 +54,9 @@ Future<void> pumpExperienceForm(WidgetTester tester, {Size? size}) async {
 /// kartu Tambah Experience, tetapi dengan [fakeToday].
 Future<void> pushExperienceForm(WidgetTester tester, {Size? size}) async {
   if (size != null) useScreenSize(tester, size);
-  await tester.pumpWidget(MaterialApp(theme: buildAppTheme(), home: const MyHomePage()));
+  await tester.pumpWidget(
+    withProviders(MaterialApp(theme: buildAppTheme(), home: const MyHomePage())),
+  );
   final navigator = tester.state<NavigatorState>(find.byType(Navigator));
   unawaited(
     navigator.push(MaterialPageRoute<void>(builder: (_) => ExperienceFormPage(today: fakeToday))),

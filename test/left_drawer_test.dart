@@ -104,10 +104,12 @@ void main() {
 
   testWidgets('header drawer tidak overflow saat teks diperbesar', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: MediaQuery(
-          data: MediaQueryData(textScaler: TextScaler.linear(2)),
-          child: Align(alignment: Alignment.centerLeft, child: LeftDrawer()),
+      withProviders(
+        const MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: Align(alignment: Alignment.centerLeft, child: LeftDrawer()),
+          ),
         ),
       ),
     );

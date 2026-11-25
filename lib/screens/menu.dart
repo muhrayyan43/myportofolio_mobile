@@ -4,11 +4,13 @@ import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:myportofolio_mobile/screens/project_list.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
 import 'package:myportofolio_mobile/widgets/info_card.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 import 'package:myportofolio_mobile/widgets/profile_header.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
-import 'package:myportofolio_mobile/screens/project_list.dart';
+import 'package:provider/provider.dart';
 
 /// Lebar maksimum konten agar kartu tidak melebar berlebihan di tablet dan web.
 const double kMaxContentWidth = 720;
@@ -48,6 +50,7 @@ class MyHomePage extends StatelessWidget {
       Colors.green.shade800,
       description: 'Tambah pengalaman baru ke portofolio',
       pageBuilder: (_) => const ExperienceFormPage(),
+      requiresLogin: true,
     ),
     ItemHomepage(
       'Lihat Proyek',
@@ -62,8 +65,15 @@ class MyHomePage extends StatelessWidget {
       Colors.teal.shade700,
       description: 'Tambah proyek baru ke portofolio',
       pageBuilder: (_) => const ProjectFormPage(),
+      requiresLogin: true,
     ),
-    ItemHomepage('Logout', Icons.logout, Colors.red.shade700, description: 'Keluar dari akun'),
+    ItemHomepage(
+      'Logout',
+      Icons.logout,
+      Colors.red.shade700,
+      description: 'Keluar dari akun',
+      onPressed: (context) => context.read<AuthState>().logout(),
+    ),
   ];
 
   static const double _pagePadding = 16;

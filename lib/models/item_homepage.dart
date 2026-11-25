@@ -13,6 +13,8 @@ class ItemHomepage {
     this.color, {
     required this.description,
     this.pageBuilder,
+    this.requiresLogin = false,
+    this.onPressed,
   });
 
   final String name;
@@ -23,4 +25,6 @@ class ItemHomepage {
   /// Halaman yang dibuka dengan `Navigator.push` setelah SnackBar tampil.
   /// Jika `null`, kartu hanya menampilkan SnackBar.
   final WidgetBuilder? pageBuilder;
+  final bool requiresLogin;
+  final Future<void> Function(BuildContext context)? onPressed;
 }

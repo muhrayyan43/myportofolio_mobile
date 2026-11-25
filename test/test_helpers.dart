@@ -4,6 +4,7 @@ import 'package:http/testing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/main.dart';
 import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +23,9 @@ const descriptionField = 1;
 const technologiesField = 2;
 const linkField = 3;
 
-/// ApiClient palsu tanpa jaringan; bawaannya setiap request mendapat `[]`.
+/// Secara bawaan test berjalan dalam keadaan sudah login dengan token ini.
+const testToken = 'test-token';
+
 ApiClient fakeApiClient([MockClientHandler? handler]) {
   return ApiClient(
     baseUrl: 'http://api.test',
@@ -30,24 +33,46 @@ ApiClient fakeApiClient([MockClientHandler? handler]) {
   );
 }
 
+Widget withProviders(Widget child, {ApiClient? apiClient, String? token = testToken}) {
+  final client = apiClient ?? fakeApiClient();
+  return MultiProvider(
+    providers: [
+      Provider<ApiClient>.value(value: client),
+      ChangeNotifierProvider(create: (_) => AuthState(client, initialToken: token)),
+    ],
+    child: child,
+  );
+}
+
 /// Menjalankan aplikasi dari root-nya, sama seperti `main()`.
 ///
 /// Jika [size] diisi, layar uji diatur ke ukuran itu (dalam piksel logis)
 /// dan dikembalikan ke ukuran bawaan setelah test selesai.
-Future<void> pumpApp(WidgetTester tester, {Size? size, ApiClient? apiClient}) async {
+Future<void> pumpApp(
+  WidgetTester tester, {
+  Size? size,
+  ApiClient? apiClient,
+  String? token = testToken,
+}) async {
   if (size != null) {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
   }
-  await tester.pumpWidget(MyApp(apiClient: apiClient ?? fakeApiClient()));
+  await tester.pumpWidget(MyApp(apiClient: apiClient ?? fakeApiClient(), initialToken: token));
 }
 
-Future<void> pumpScreen(WidgetTester tester, Widget home, {ApiClient? apiClient}) async {
+Future<void> pumpScreen(
+  WidgetTester tester,
+  Widget home, {
+  ApiClient? apiClient,
+  String? token = testToken,
+}) async {
   await tester.pumpWidget(
-    Provider<ApiClient>.value(
-      value: apiClient ?? fakeApiClient(),
-      child: MaterialApp(theme: buildAppTheme(), home: home),
+    withProviders(
+      MaterialApp(theme: buildAppTheme(), home: home),
+      apiClient: apiClient,
+      token: token,
     ),
   );
 }

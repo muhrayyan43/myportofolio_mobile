@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/models/item_homepage.dart';
 import 'package:myportofolio_mobile/utils/color_contrast.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
 
 /// Kartu tombol aksi di halaman utama.
 ///
@@ -8,13 +9,26 @@ import 'package:myportofolio_mobile/utils/color_contrast.dart';
 /// efek hover/fokus/tekan diturunkan dari [readableOn] agar tetap terbaca.
 /// [Semantics] membuat pembaca layar membacakan kartu sebagai satu tombol,
 /// dan [Tooltip] menjelaskan aksinya saat kartu di-hover atau ditekan lama.
-/// Jika [ItemHomepage.pageBuilder] diisi, halaman itu dibuka dengan
-/// `Navigator.push` setelah SnackBar, sehingga tombol kembali perangkat
-/// membawa pengguna ke halaman utama lagi.
 class ItemCard extends StatelessWidget {
   const ItemCard(this.item, {super.key});
 
   final ItemHomepage item;
+
+  Future<void> _handleTap(BuildContext context) async {
+    _showPressedMessage(context);
+    if (item.requiresLogin && !await ensureLoggedIn(context)) return;
+    if (!context.mounted) return;
+
+    final action = item.onPressed;
+    if (action != null) {
+      await action(context);
+      return;
+    }
+    final pageBuilder = item.pageBuilder;
+    if (pageBuilder != null) {
+      await Navigator.push(context, MaterialPageRoute<void>(builder: pageBuilder));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +44,7 @@ class ItemCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
-            onTap: () {
-              _showPressedMessage(context);
-              final pageBuilder = item.pageBuilder;
-              if (pageBuilder != null) {
-                Navigator.push(context, MaterialPageRoute(builder: pageBuilder));
-              }
-            },
+            onTap: () => _handleTap(context),
             mouseCursor: SystemMouseCursors.click,
             hoverColor: foreground.withValues(alpha: 0.08),
             highlightColor: foreground.withValues(alpha: 0.12),
@@ -63,8 +71,6 @@ class ItemCard extends StatelessWidget {
     );
   }
 
-  /// Menutup SnackBar sebelumnya, lalu menampilkan
-  /// "Kamu telah menekan tombol X!" untuk tombol ini.
   void _showPressedMessage(BuildContext context) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
