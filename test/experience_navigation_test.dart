@@ -66,7 +66,7 @@ void main() {
     expect(canGoBack(tester), isFalse);
   });
 
-  testWidgets('drawer berisi Home, Add Project, lalu Add Experience', (tester) async {
+  testWidgets('drawer berisi Home, Add Project, Projects, lalu Add Experience', (tester) async {
     await pumpApp(tester);
     await openDrawer(tester);
 
@@ -74,7 +74,7 @@ void main() {
         .widgetList<ListTile>(find.byType(ListTile))
         .map((tile) => (tile.title! as Text).data)
         .toList();
-    expect(titles, ['Home', 'Add Project', 'Add Experience']);
+    expect(titles, ['Home', 'Add Project', 'Projects', 'Add Experience']);
   });
 
   testWidgets('Add Experience dari halaman utama membuka form Experience', (tester) async {

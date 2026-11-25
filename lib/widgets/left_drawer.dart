@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:myportofolio_mobile/screens/project_list.dart';
 
 /// Menu navigasi dari sisi kiri layar, dipakai oleh semua halaman.
 ///
@@ -97,6 +98,11 @@ class LeftDrawer extends StatelessWidget {
             leading: const Icon(Icons.add_circle_outline),
             title: const Text('Add Project'),
             onTap: () => _openPage<ProjectFormPage>(context, (_) => const ProjectFormPage()),
+          ),
+          ListTile(
+            leading: const Icon(Icons.folder_outlined),
+            title: const Text('Projects'),
+            onTap: () => _openPage<ProjectListScreen>(context, (_) => const ProjectListScreen()),
           ),
           ListTile(
             leading: const Icon(Icons.work_outline),

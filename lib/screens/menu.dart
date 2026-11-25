@@ -8,6 +8,7 @@ import 'package:myportofolio_mobile/widgets/info_card.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 import 'package:myportofolio_mobile/widgets/profile_header.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
+import 'package:myportofolio_mobile/screens/project_list.dart';
 
 /// Lebar maksimum konten agar kartu tidak melebar berlebihan di tablet dan web.
 const double kMaxContentWidth = 720;
@@ -53,6 +54,7 @@ class MyHomePage extends StatelessWidget {
       Icons.folder,
       Colors.amber.shade700,
       description: 'Lihat proyek yang pernah dikerjakan',
+      pageBuilder: (_) => const ProjectListScreen(),
     ),
     ItemHomepage(
       'Tambah Proyek',

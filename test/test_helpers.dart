@@ -1,7 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/main.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
+import 'package:provider/provider.dart';
 
 /// HP dalam posisi potret.
 const portraitPhone = Size(360, 800);
@@ -18,17 +22,34 @@ const descriptionField = 1;
 const technologiesField = 2;
 const linkField = 3;
 
+/// ApiClient palsu tanpa jaringan; bawaannya setiap request mendapat `[]`.
+ApiClient fakeApiClient([MockClientHandler? handler]) {
+  return ApiClient(
+    baseUrl: 'http://api.test',
+    client: MockClient(handler ?? (_) async => http.Response('[]', 200)),
+  );
+}
+
 /// Menjalankan aplikasi dari root-nya, sama seperti `main()`.
 ///
 /// Jika [size] diisi, layar uji diatur ke ukuran itu (dalam piksel logis)
 /// dan dikembalikan ke ukuran bawaan setelah test selesai.
-Future<void> pumpApp(WidgetTester tester, {Size? size}) async {
+Future<void> pumpApp(WidgetTester tester, {Size? size, ApiClient? apiClient}) async {
   if (size != null) {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
   }
-  await tester.pumpWidget(const MyApp());
+  await tester.pumpWidget(MyApp(apiClient: apiClient ?? fakeApiClient()));
+}
+
+Future<void> pumpScreen(WidgetTester tester, Widget home, {ApiClient? apiClient}) async {
+  await tester.pumpWidget(
+    Provider<ApiClient>.value(
+      value: apiClient ?? fakeApiClient(),
+      child: MaterialApp(theme: buildAppTheme(), home: home),
+    ),
+  );
 }
 
 /// Menggulir ke kartu aksi bernama [name] bila perlu, menekannya, lalu

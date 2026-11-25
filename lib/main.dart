@@ -1,8 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp(apiClient: ApiClient()));
 }
 
 /// Tema aplikasi: warna indigo dan amber dari Tutorial 08.
@@ -21,12 +23,16 @@ ThemeData buildAppTheme() {
   );
 }
 
-/// Root aplikasi: MaterialApp dengan tema dari [buildAppTheme].
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({required this.apiClient, super.key});
+
+  final ApiClient apiClient;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'MyPortfolio', theme: buildAppTheme(), home: const MyHomePage());
+    return MultiProvider(
+      providers: [Provider<ApiClient>.value(value: apiClient)],
+      child: MaterialApp(title: 'MyPortfolio', theme: buildAppTheme(), home: const MyHomePage()),
+    );
   }
 }
