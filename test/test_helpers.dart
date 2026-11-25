@@ -21,7 +21,8 @@ const wideScreen = Size(1024, 768);
 const nameField = 0;
 const descriptionField = 1;
 const technologiesField = 2;
-const linkField = 3;
+const yearField = 3;
+const linkField = 4;
 
 /// Secara bawaan test berjalan dalam keadaan sudah login dengan token ini.
 const testToken = 'test-token';

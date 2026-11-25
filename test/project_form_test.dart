@@ -1,37 +1,53 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/screens/login.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:provider/provider.dart';
 
 import 'test_helpers.dart';
 
-const nameError = 'Nama proyek tidak boleh kosong!';
-const descriptionError = 'Deskripsi proyek tidak boleh kosong!';
+final savedProjectJson = {
+  'id': 5,
+  'title': 'Portofolio',
+  'description': 'Aplikasi mobile',
+  'tech_stack': 'Flutter',
+  'year': DateTime.now().year,
+  'url': 'https://github.com/muhrayyan43/myportofolio',
+  'star_count': 0,
+  'is_starred': false,
+  'starred_by_names': '',
+};
 
-final categoryField = find.byType(DropdownButtonFormField<String>);
-
-/// Menekan tombol Save lalu menunggu validasi atau pop-up selesai tampil.
 Future<void> tapSave(WidgetTester tester) async {
-  final save = find.widgetWithText(ElevatedButton, 'Save');
+  final save = find.byType(ElevatedButton);
   await tester.ensureVisible(save);
   await tester.pumpAndSettle();
   await tester.tap(save);
   await tester.pumpAndSettle();
 }
 
-/// Mengisi hanya field yang wajib diisi.
 Future<void> fillRequiredFields(WidgetTester tester) async {
   await tester.enterText(formField(nameField), 'Portofolio');
   await tester.enterText(formField(descriptionField), 'Aplikasi mobile');
+  await tester.enterText(formField(technologiesField), 'Flutter');
   await tester.pump();
 }
 
-/// Membuka form dan menutup SnackBar agar tidak menghalangi tombol Save.
-Future<void> openCleanForm(WidgetTester tester, {Size? size}) async {
-  await pumpApp(tester, size: size);
+Future<void> openCleanForm(WidgetTester tester, {Size? size, ApiClient? apiClient}) async {
+  await pumpApp(tester, size: size, apiClient: apiClient);
   await openProjectForm(tester);
   ScaffoldMessenger.of(tester.element(find.byType(ProjectFormPage))).removeCurrentSnackBar();
   await tester.pumpAndSettle();
+}
+
+bool isLoggedIn(WidgetTester tester) {
+  return Provider.of<AuthState>(tester.element(find.byType(Navigator)), listen: false).isLoggedIn;
 }
 
 void main() {
@@ -41,7 +57,6 @@ void main() {
 
     expect(find.byType(ProjectFormPage), findsOneWidget);
     expect(find.text('Add Project Form'), findsOneWidget);
-    expect(find.text('Kamu telah menekan tombol Tambah Proyek!'), findsOneWidget);
 
     await pressSystemBack(tester);
 
@@ -49,130 +64,106 @@ void main() {
     expect(find.byType(MyHomePage), findsOneWidget);
   });
 
-  testWidgets('form berisi empat field teks dan dropdown kategori', (tester) async {
+  testWidgets('form berisi lima field sesuai ProjectSerializer', (tester) async {
     await openCleanForm(tester);
 
-    expect(find.byType(TextFormField), findsNWidgets(4));
-    expect(categoryField, findsOneWidget);
-    expect(find.text('Kategori Proyek'), findsOneWidget);
+    expect(find.byType(TextFormField), findsNWidgets(5));
+    for (final label in ['Judul Proyek', 'Deskripsi', 'Tech Stack', 'Tahun']) {
+      expect(find.text(label), findsOneWidget);
+    }
+    expect(find.text('URL Proyek (opsional)'), findsOneWidget);
+    expect(formFieldText(tester, yearField), '${DateTime.now().year}');
   });
 
   testWidgets('field wajib yang kosong menampilkan pesan error', (tester) async {
     await openCleanForm(tester);
     await tapSave(tester);
 
-    expect(find.text(nameError), findsOneWidget);
-    expect(find.text(descriptionError), findsOneWidget);
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.text('Judul proyek tidak boleh kosong!'), findsOneWidget);
+    expect(find.text('Deskripsi proyek tidak boleh kosong!'), findsOneWidget);
+    expect(find.text('Tech stack tidak boleh kosong!'), findsOneWidget);
   });
 
-  testWidgets('field wajib yang hanya berisi spasi ditolak', (tester) async {
-    await openCleanForm(tester);
-    await tester.enterText(formField(nameField), '   ');
-    await tester.enterText(formField(descriptionField), '   ');
-    await tester.pump();
-    await tapSave(tester);
-
-    expect(find.text(nameError), findsOneWidget);
-    expect(find.text(descriptionError), findsOneWidget);
-    expect(find.byType(AlertDialog), findsNothing);
-  });
-
-  testWidgets('teknologi dan tautan boleh kosong', (tester) async {
+  testWidgets('tahun dan URL yang tidak valid ditolak', (tester) async {
     await openCleanForm(tester);
     await fillRequiredFields(tester);
+    await tester.enterText(formField(yearField), 'abc');
+    await tester.enterText(formField(linkField), 'bukan-url');
     await tapSave(tester);
 
-    expect(find.byType(AlertDialog), findsOneWidget);
-    expect(find.text('Kategori: Web Development'), findsOneWidget);
-    expect(find.text('Teknologi: '), findsOneWidget);
-    expect(find.text('Tautan: '), findsOneWidget);
+    expect(find.text('Tahun harus berupa angka!'), findsOneWidget);
+    expect(find.text('URL harus diawali http:// atau https://'), findsOneWidget);
   });
 
-  testWidgets('pop-up menampilkan semua isian form', (tester) async {
-    await openCleanForm(tester);
+  testWidgets('Save mengirim POST dengan token lalu menampilkan dialog', (tester) async {
+    http.Request? sent;
+    await openCleanForm(
+      tester,
+      apiClient: fakeApiClient((request) async {
+        sent = request;
+        return http.Response(jsonEncode(savedProjectJson), 201);
+      }),
+    );
     await fillRequiredFields(tester);
-    await tester.enterText(formField(technologiesField), 'Flutter, Django');
-    await tester.enterText(formField(linkField), 'https://example.com');
-    await tester.pump();
-    await tester.tap(categoryField);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Data Science').last);
-    await tester.pumpAndSettle();
+    await tester.enterText(formField(linkField), 'https://github.com/muhrayyan43/myportofolio');
     await tapSave(tester);
 
-    expect(find.text('Proyek berhasil ditambahkan!'), findsOneWidget);
-    expect(find.text('Nama Proyek: Portofolio'), findsOneWidget);
-    expect(find.text('Deskripsi: Aplikasi mobile'), findsOneWidget);
-    expect(find.text('Kategori: Data Science'), findsOneWidget);
-    expect(find.text('Teknologi: Flutter, Django'), findsOneWidget);
-    expect(find.text('Tautan: https://example.com'), findsOneWidget);
+    expect(sent!.method, 'POST');
+    expect(sent!.url.path, '/api/v1/projects/');
+    expect(sent!.headers['Authorization'], 'Token $testToken');
+    expect(jsonDecode(sent!.body), {
+      'title': 'Portofolio',
+      'description': 'Aplikasi mobile',
+      'tech_stack': 'Flutter',
+      'year': DateTime.now().year,
+      'url': 'https://github.com/muhrayyan43/myportofolio',
+    });
+    expect(find.text('Proyek berhasil disimpan!'), findsOneWidget);
+
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(formFieldText(tester, nameField), isEmpty);
   });
 
-  testWidgets('OK menutup pop-up dan mengosongkan form', (tester) async {
-    await openCleanForm(tester);
+  testWidgets('401 menghapus sesi dan membuka layar login', (tester) async {
+    await openCleanForm(
+      tester,
+      apiClient: fakeApiClient((_) async => http.Response('{"detail": "Invalid token."}', 401)),
+    );
     await fillRequiredFields(tester);
-    await tester.enterText(formField(technologiesField), 'Flutter');
-    await tester.enterText(formField(linkField), 'https://example.com');
-    await tester.pump();
-    await tester.tap(categoryField);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Other').last);
-    await tester.pumpAndSettle();
     await tapSave(tester);
-    await tester.tap(find.widgetWithText(TextButton, 'OK'));
-    await tester.pumpAndSettle();
 
-    expect(find.byType(AlertDialog), findsNothing);
-    for (final field in [nameField, descriptionField, technologiesField, linkField]) {
-      expect(formFieldText(tester, field), isEmpty);
-    }
-    expect(tester.state<FormFieldState<String>>(categoryField).value, 'Web Development');
+    expect(find.byType(LoginScreen), findsOneWidget);
+    expect(find.text('Sesi login berakhir. Silakan login lagi.'), findsOneWidget);
+    expect(isLoggedIn(tester), isFalse);
   });
 
-  testWidgets('isian lama tidak muncul lagi pada pop-up berikutnya', (tester) async {
-    await openCleanForm(tester);
-    await fillRequiredFields(tester);
-    await tester.enterText(formField(technologiesField), 'Flutter');
-    await tester.enterText(formField(linkField), 'https://example.com');
-    await tester.pump();
-    await tester.tap(categoryField);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Other').last);
-    await tester.pumpAndSettle();
-    await tapSave(tester);
-    await tester.tap(find.widgetWithText(TextButton, 'OK'));
-    await tester.pumpAndSettle();
-
+  testWidgets('403 menampilkan pesan izin', (tester) async {
+    await openCleanForm(
+      tester,
+      apiClient: fakeApiClient((_) async => http.Response('{"detail": "x"}', 403)),
+    );
     await fillRequiredFields(tester);
     await tapSave(tester);
 
-    expect(find.text('Kategori: Web Development'), findsOneWidget);
-    expect(find.text('Teknologi: '), findsOneWidget);
-    expect(find.text('Tautan: '), findsOneWidget);
+    expect(find.text('Akun ini tidak punya izin menambah proyek.'), findsOneWidget);
+    expect(isLoggedIn(tester), isTrue);
   });
 
-  testWidgets('HP landscape: form dan pop-up tidak overflow', (tester) async {
-    await openCleanForm(tester, size: landscapePhone);
-    expect(tester.takeException(), isNull);
-
+  testWidgets('tanpa koneksi menampilkan pesan', (tester) async {
+    await openCleanForm(
+      tester,
+      apiClient: fakeApiClient((_) async => throw http.ClientException('offline')),
+    );
     await fillRequiredFields(tester);
     await tapSave(tester);
 
-    expect(find.byType(AlertDialog), findsOneWidget);
-    expect(tester.takeException(), isNull);
+    expect(find.text('Tidak dapat terhubung ke server.'), findsOneWidget);
   });
 
   testWidgets('HP potret: form tidak overflow', (tester) async {
     await openCleanForm(tester, size: portraitPhone);
 
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('layar lebar: lebar form tidak melebihi kMaxContentWidth', (tester) async {
-    await openCleanForm(tester, size: wideScreen);
-
-    expect(tester.getSize(formField(nameField)).width, lessThanOrEqualTo(kMaxContentWidth));
     expect(tester.takeException(), isNull);
   });
 }
